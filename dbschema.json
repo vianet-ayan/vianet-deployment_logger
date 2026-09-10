@@ -1,0 +1,340 @@
+{
+  "tables": {
+    "access_groups": {
+      "columns": [
+        { "name": "id", "type": "bigint", "nullable": false, "default": "nextval('app.access_groups_id_seq'::regclass)", "primary_key": true },
+        { "name": "name", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp with time zone", "nullable": true, "default": "now()", "primary_key": false },
+        { "name": "updated_at", "type": "timestamp with time zone", "nullable": true, "default": "now()", "primary_key": false },
+        { "name": "join_url", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "api": {
+      "columns": [
+        { "name": "keyid", "type": "character varying", "nullable": false, "default": null, "primary_key": true },
+        { "name": "key", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "accessgroupid", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "settings", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "now()", "primary_key": false },
+        { "name": "access_group_id", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "user_id", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "permissions", "type": "jsonb", "nullable": true, "default": "'[]'::jsonb", "primary_key": false },
+        { "name": "duration", "type": "text", "nullable": true, "default": "'never'::text", "primary_key": false },
+        { "name": "updated_at", "type": "timestamp with time zone", "nullable": true, "default": "now()", "primary_key": false },
+        { "name": "last_used", "type": "timestamp with time zone", "nullable": true, "default": null, "primary_key": false },
+        { "name": "key_name", "type": "text", "nullable": true, "default": "''::text", "primary_key": false },
+        { "name": "is_active", "type": "boolean", "nullable": true, "default": "true", "primary_key": false }
+      ]
+    },
+    "balancesheet": {
+      "columns": [
+        { "name": "id", "type": "bigint", "nullable": false, "default": "nextval('app.balancesheet_id_seq'::regclass)", "primary_key": true },
+        { "name": "date", "type": "date", "nullable": false, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "now()", "primary_key": false }
+      ]
+    },
+    "data": {
+      "columns": [
+        { "name": "id", "type": "bigint", "nullable": false, "default": "nextval('app.data_id_seq'::regclass)", "primary_key": true },
+        { "name": "date", "type": "date", "nullable": false, "default": null, "primary_key": false },
+        { "name": "name", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "now()", "primary_key": false }
+      ]
+    },
+    "email_marketing": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": null, "primary_key": true },
+        { "name": "ename", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "email", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "access_group_id", "type": "smallint", "nullable": true, "default": null, "primary_key": false },
+        { "name": "include_value", "type": "boolean", "nullable": true, "default": null, "primary_key": false },
+        { "name": "brand", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "schedule", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "include_detailed", "type": "boolean", "nullable": true, "default": null, "primary_key": false },
+        { "name": "last_sent", "type": "timestamp with time zone", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "google-auth": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": "nextval('app.\"google-auth_id_seq\"'::regclass)", "primary_key": true },
+        { "name": "user_email", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "access_token", "type": "text", "nullable": false, "default": null, "primary_key": false },
+        { "name": "refresh_token", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "scope", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "token_type", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "expiry_date", "type": "bigint", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp with time zone", "nullable": true, "default": "CURRENT_TIMESTAMP", "primary_key": false },
+        { "name": "updated_at", "type": "timestamp with time zone", "nullable": true, "default": "CURRENT_TIMESTAMP", "primary_key": false }
+      ]
+    },
+    "iag_backup": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "inventoryid", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "accessgroupid", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "oprice", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": null, "primary_key": false },
+        { "name": "partner_sku_name", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "iag_backup_join": {
+      "columns": [
+        { "name": "stockid", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "stockname", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "id", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "inventoryid", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "accessgroupid", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "oprice", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": null, "primary_key": false },
+        { "name": "partner_sku_name", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "invid", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "fullname", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "inventory": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": null, "primary_key": true },
+        { "name": "fullname", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "brand", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "model", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "varient", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "color", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "integer", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "vquantity", "type": "integer", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "price", "type": "numeric", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "gst", "type": "numeric", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "resources", "type": "jsonb", "nullable": true, "default": "'{}'::jsonb", "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "CURRENT_TIMESTAMP", "primary_key": false },
+        { "name": "updated_at", "type": "timestamp without time zone", "nullable": true, "default": "CURRENT_TIMESTAMP", "primary_key": false },
+        { "name": "tally_name", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "guid", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "add_price", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "unit", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "cost_method", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "stockname", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "masterid", "type": "bigint", "nullable": true, "default": null, "primary_key": false },
+        { "name": "costing_meth", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "category_level_1", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "category_level_2", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "isblocked", "type": "boolean", "nullable": false, "default": "false", "primary_key": false },
+        { "name": "modelname", "type": "text", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "inventory_access_group": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": null, "primary_key": true },
+        { "name": "inventoryid", "type": "integer", "nullable": false, "default": null, "primary_key": false },
+        { "name": "accessgroupid", "type": "integer", "nullable": false, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "integer", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "oprice", "type": "numeric", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "CURRENT_TIMESTAMP", "primary_key": false },
+        { "name": "partner_sku_name", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "inventory_backup_temp": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "fullname", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "brand", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "model", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "varient", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "color", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "vquantity", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "price", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "gst", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "resources", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": null, "primary_key": false },
+        { "name": "updated_at", "type": "timestamp without time zone", "nullable": true, "default": null, "primary_key": false },
+        { "name": "tally_name", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "guid", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "add_price", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "unit", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "cost_method", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "inventory_brand_fix_backup": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "brand", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "ledger": {
+      "columns": [
+        { "name": "id", "type": "bigint", "nullable": false, "default": "nextval('app.ledger_id_seq'::regclass)", "primary_key": true },
+        { "name": "guid", "type": "uuid", "nullable": false, "default": "gen_random_uuid()", "primary_key": false },
+        { "name": "name", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "address", "type": "ARRAY", "nullable": true, "default": null, "primary_key": false },
+        { "name": "mobile", "type": "ARRAY", "nullable": true, "default": null, "primary_key": false },
+        { "name": "ledgername", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "mismatched_stock": {
+      "columns": [
+        { "name": "fullname", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "inventoryquantity", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "stockquantity", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "stockprice", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "inventoryprice", "type": "numeric", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "outstanding": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": null, "primary_key": true },
+        { "name": "date", "type": "date", "nullable": true, "default": null, "primary_key": false },
+        { "name": "due_date", "type": "integer", "nullable": true, "default": null, "primary_key": false },
+        { "name": "partyname", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "partyledgerid", "type": "uuid", "nullable": true, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "type", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "prodcache": {
+      "columns": [
+        { "name": "id", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "fullname", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "brand", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "model", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "varient", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "color", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "vquantity", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "price", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "gst", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "resources", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "updated_at", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "tally_name", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "guid", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "add_price", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "unit", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "cost_method", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "stockname", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "masterid", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "costing_meth", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "data", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "category_level_1", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "category_level_2", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "isblocked", "type": "boolean", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "profitloss": {
+      "columns": [
+        { "name": "id", "type": "bigint", "nullable": false, "default": "nextval('app.profitloss_id_seq'::regclass)", "primary_key": true },
+        { "name": "date", "type": "date", "nullable": false, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "now()", "primary_key": false }
+      ]
+    },
+    "profitloss_monthly": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": "nextval('app.profitloss_monthly_id_seq'::regclass)", "primary_key": true },
+        { "name": "month", "type": "text", "nullable": false, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": false, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp with time zone", "nullable": false, "default": "now()", "primary_key": false },
+        { "name": "updated_at", "type": "timestamp with time zone", "nullable": false, "default": "now()", "primary_key": false }
+      ]
+    },
+    "qtycache": {
+      "columns": [
+        { "name": "guid", "type": "character varying", "nullable": false, "default": null, "primary_key": true },
+        { "name": "quantity", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "updated_at", "type": "timestamp without time zone", "nullable": true, "default": "now()", "primary_key": false }
+      ]
+    },
+    "sales_records": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": null, "primary_key": true },
+        { "name": "sales_date", "type": "date", "nullable": false, "default": null, "primary_key": false },
+        { "name": "voucher_no", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "party_ledger_name", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "salesman", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "parent", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "voucher_type", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "inv_qty", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "bill_amt", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "extra", "type": "jsonb", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "stock_backup": {
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false, "default": null, "primary_key": true },
+        { "name": "stockname", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "guid", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "numeric", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "price", "type": "numeric", "nullable": true, "default": "0", "primary_key": false },
+        { "name": "masterid", "type": "integer", "nullable": false, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "CURRENT_TIMESTAMP", "primary_key": false },
+        { "name": "updated_at", "type": "timestamp without time zone", "nullable": true, "default": "CURRENT_TIMESTAMP", "primary_key": false },
+        { "name": "costing_meth", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "unit", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "updated_inventory_cache": {
+      "columns": [
+        { "name": "id", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "fullname", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "brand", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "model", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "varient", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "color", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "quantity", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "vquantity", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "price", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "gst", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "resources", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": null, "primary_key": false },
+        { "name": "updated_at", "type": "timestamp without time zone", "nullable": true, "default": null, "primary_key": false },
+        { "name": "tally_name", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "guid", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "add_price", "type": "numeric", "nullable": true, "default": null, "primary_key": false },
+        { "name": "unit", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "cost_method", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "stockname", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "masterid", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "costing_meth", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "data", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "category_level_1", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "category_level_2", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "isblocked", "type": "boolean", "nullable": true, "default": null, "primary_key": false },
+        { "name": "modelname", "type": "text", "nullable": true, "default": null, "primary_key": false }
+      ]
+    },
+    "users": {
+      "columns": [
+        { "name": "id", "type": "bigint", "nullable": false, "default": "nextval('app.users_id_seq'::regclass)", "primary_key": true },
+        { "name": "name", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "email", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "password", "type": "text", "nullable": false, "default": null, "primary_key": false },
+        { "name": "settings", "type": "jsonb", "nullable": true, "default": "'{}'::jsonb", "primary_key": false },
+        { "name": "access_group_id", "type": "bigint", "nullable": false, "default": null, "primary_key": false },
+        { "name": "user_type", "type": "character varying", "nullable": false, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp with time zone", "nullable": true, "default": "now()", "primary_key": false },
+        { "name": "updated_at", "type": "timestamp with time zone", "nullable": true, "default": "now()", "primary_key": false },
+        { "name": "is_active", "type": "boolean", "nullable": true, "default": "true", "primary_key": false },
+        { "name": "verified", "type": "boolean", "nullable": false, "default": "false", "primary_key": false }
+      ]
+    },
+    "vouchers": {
+      "columns": [
+        { "name": "id", "type": "bigint", "nullable": false, "default": "nextval('app.vouchers_id_seq'::regclass)", "primary_key": true },
+        { "name": "guid", "type": "character varying", "nullable": true, "default": "gen_random_uuid()", "primary_key": false },
+        { "name": "date", "type": "date", "nullable": true, "default": null, "primary_key": false },
+        { "name": "voucher_type", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "voucher_number", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "party_ledger_name", "type": "character varying", "nullable": true, "default": null, "primary_key": false },
+        { "name": "narration", "type": "text", "nullable": true, "default": null, "primary_key": false },
+        { "name": "ledgerentries", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "inventoryentries", "type": "jsonb", "nullable": true, "default": null, "primary_key": false },
+        { "name": "created_at", "type": "timestamp without time zone", "nullable": true, "default": "now()", "primary_key": false },
+        { "name": "billagentname", "type": "character varying", "nullable": true, "default": null, "primary_key": false }
+      ]
+    }
+  }
+}

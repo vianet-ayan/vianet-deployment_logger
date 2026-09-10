@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-export default function TestPage() {
+export default function AppTestPage() {
   const [response, setResponse] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -10,7 +10,7 @@ export default function TestPage() {
     setError(null)
     setResponse(null)
     try {
-      const res = await fetch("/api/admin/test")
+      const res = await fetch("/api/app/test")
       const text = await res.text()
       setResponse(text)
     } catch (err) {
@@ -26,9 +26,9 @@ export default function TestPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin Test</h1>
+      <h1 className="text-2xl font-bold mb-4">App Test</h1>
       <p className="text-muted-foreground mb-6">
-        GET <code className="rounded bg-muted px-1.5 py-0.5 text-sm">/api/admin/test</code>
+        GET <code className="rounded bg-muted px-1.5 py-0.5 text-sm">/api/app/test</code>
       </p>
       <button
         onClick={fetchTest}

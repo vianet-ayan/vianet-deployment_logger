@@ -9,7 +9,7 @@ import {
   Package,
   Plus,
   Settings,
-  SquareTerminal,
+  Sparkles,
   User,
 } from "lucide-react"
 
@@ -38,9 +38,11 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -52,50 +54,25 @@ import {
 
 const data = {
   user: {
-    name: "Admin",
-    email: "admin@vianet.com",
-    avatar: "/avatars/admin.jpg",
+    name: "User",
+    email: "user@vianet.com",
+    avatar: "/avatars/user.jpg",
   },
   teams: [
     {
-      name: "Vianet",
+      name: "App",
       logo: Command,
-      plan: "Enterprise",
-    },
-    {
-      name: "Vianet Corp.",
-      logo: GalleryVerticalEnd,
-      plan: "Startup",
+      plan: "Workspace",
     },
   ],
   navMain: [
     {
-      title: "Dashboard",
-      url: "/admin/dashboard",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        { title: "Overview", url: "/admin/dashboard" },
-        { title: "Analytics", url: "/admin/analytics" },
-      ],
-    },
-    {
-      title: "Management",
+      title: "Inventory",
       url: "#",
       icon: Package,
+      isActive: true,
       items: [
-        { title: "Inventory", url: "/admin/inventory" },
-        { title: "Reports", url: "/admin/reports" },
-        { title: "Tally", url: "/admin/tally" },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: Settings,
-      items: [
-        { title: "General", url: "/admin/settings" },
-        { title: "Login Page", url: "/admin/loginPage" },
+        { title: "Stock", url: "/app/stock" },
       ],
     },
   ],
@@ -216,7 +193,6 @@ function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      {/* Replaced <a> with React Router <Link> */}
                       <SidebarMenuSubButton render={<Link to={subItem.url} />}>
                         <span>{subItem.title}</span>
                       </SidebarMenuSubButton>
@@ -286,17 +262,17 @@ function NavUser({
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <Sparkles />
+                Upgrade to Pro
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {/* Wrapped with Link for internal routing */}
-              <DropdownMenuItem render={<Link to="/admin/account" />}>
-                <User />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem render={<Link to="/admin/settings" />}>
+              <DropdownMenuItem render={<Link to="/app/settings" />}>
                 <Settings />
-                Settings
+                Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -313,7 +289,7 @@ function NavUser({
   )
 }
 
-export function AdminSidebar({
+export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   return (

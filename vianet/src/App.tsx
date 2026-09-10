@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import AdminRootLayout from "./adminPages/adminLayout/adminRootLayout"
+import AppLayout from "./appPages/layout/appLayout"
 
 const Landing = lazy(() =>
   import('./landing/landing').then((module) => ({
@@ -16,6 +17,8 @@ const Reports = lazy(() => import("./adminPages/reports"))
 const Tally = lazy(() => import("./adminPages/tally"))
 const Settings = lazy(() => import("./adminPages/settings"))
 const TestPage = lazy(() => import("./appPages/test"))
+const AdminTestPage = lazy(() => import("./adminPages/test"))
+const StockPage = lazy(() => import("./appPages/stock"))
 
 
 
@@ -61,7 +64,19 @@ const router = createBrowserRouter([
     path: "/app",
     element: (
       <Suspense fallback={<PageFallback />}>
-        <Appm />
+        <AppLayout>
+          <Appm />
+        </AppLayout>
+      </Suspense>
+    ),
+  },
+  {
+    path: "/app/stock",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <AppLayout>
+          <StockPage />
+        </AppLayout>
       </Suspense>
     ),
   },
@@ -88,6 +103,7 @@ const router = createBrowserRouter([
       { path: "reports", element: <Reports /> },
       { path: "tally", element: <Tally /> },
       { path: "settings", element: <Settings /> },
+      { path: "test", element: <AdminTestPage /> },
     ],
   },
 ])

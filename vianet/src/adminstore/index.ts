@@ -53,13 +53,11 @@ export {
 } from "./slices/settingsSlice";
 
 export {
-  setUsers,
-  addUser,
-  updateUser,
-  removeUser,
+  fetchAllUsers,
+  fetchUserById,
+  updateUserById,
   setSelectedUser,
-  setLoading as setUserLoading,
-  setError as setUserError,
+  clearSelectedUser,
 } from "./slices/userSlice";
 
 export {

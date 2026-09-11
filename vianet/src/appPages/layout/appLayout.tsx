@@ -1,7 +1,8 @@
+import { Outlet } from "react-router-dom"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./components/appSidebar"
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -11,7 +12,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarTrigger className="-ml-1" />
           </div>
         </header>
-        <div className="flex-1 p-6">{children}</div>
+        <div className="flex-1 p-6"><Outlet /></div>
       </SidebarInset>
     </SidebarProvider>
   )

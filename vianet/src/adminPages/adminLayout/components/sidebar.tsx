@@ -1,16 +1,18 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import {
   ChevronRight,
   ChevronsUpDown,
-  Command,
   GalleryVerticalEnd,
   LogOut,
+  Mail,
   Package,
   Plus,
   Settings,
   SquareTerminal,
   User,
+  Users,
 } from "lucide-react"
 
 import {
@@ -49,17 +51,17 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { fetchUserById } from "@/adminstore"
+
+function VianetLogo({ className }: { className?: string }) {
+  return <img src="/vianet.png" alt="Vianet" className={className} />
+}
 
 const data = {
-  user: {
-    name: "Admin",
-    email: "admin@vianet.com",
-    avatar: "/avatars/admin.jpg",
-  },
   teams: [
     {
       name: "Vianet",
-      logo: Command,
+      logo: VianetLogo,
       plan: "Enterprise",
     },
     {
@@ -85,8 +87,34 @@ const data = {
       icon: Package,
       items: [
         { title: "Inventory", url: "/admin/inventory" },
-        { title: "Reports", url: "/admin/reports" },
         { title: "Tally", url: "/admin/tally" },
+      ],
+    },
+    {
+      title: "Reports",
+      url: "#",
+      icon: SquareTerminal,
+      items: [
+        { title: "P&L", url: "/admin/reports/pnl" },
+        { title: "Balance Sheet", url: "/admin/reports/balance-sheet" },
+        { title: "Day Book", url: "/admin/reports/daybook" },
+      ],
+    },
+    {
+      title: "Marketing",
+      url: "#",
+      icon: Mail,
+      items: [
+        { title: "Email", url: "/admin/marketing/email" },
+      ],
+    },
+    {
+      title: "Group",
+      url: "#",
+      icon: Users,
+      items: [
+        { title: "Access", url: "/admin/group/access" },
+        { title: "Employees", url: "/admin/group/employ" },
       ],
     },
     {
@@ -316,6 +344,18 @@ function NavUser({
 export function AdminSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const dispatch = useDispatch()
+  const selectedUser = useSelector((state: any) => state.user?.selectedUser)
+  const loading = useSelector((state: any) => state.user?.loading)
+
+  React.useEffect(() => {
+    dispatch(fetchUserById(24) as any)
+  }, [dispatch])
+
+  const user = selectedUser
+    ? { name: selectedUser.name, email: selectedUser.email, avatar: "" }
+    : { name: "Admin", email: "admin@vianet.com", avatar: "" }
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -325,7 +365,23 @@ export function AdminSidebar({
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {loading ? (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarFallback className="rounded-lg">...</AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium animate-pulse">Loading...</span>
+                  <span className="truncate text-xs animate-pulse">Please wait</span>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        ) : (
+          <NavUser user={user} />
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

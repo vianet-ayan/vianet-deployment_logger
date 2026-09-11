@@ -14,11 +14,17 @@ const Dashboard = lazy(() => import("./adminPages/dashboard"))
 const Inventory = lazy(() => import("./adminPages/inventory"))
 const LoginPage = lazy(() => import("./adminPages/loginPage"))
 const Reports = lazy(() => import("./adminPages/reports"))
+const PnL = lazy(() => import("./adminPages/reports/pnl"))
+const BalanceSheet = lazy(() => import("./adminPages/reports/balanceSheet"))
+const DayBook = lazy(() => import("./adminPages/reports/dayBook"))
 const Tally = lazy(() => import("./adminPages/tally"))
 const Settings = lazy(() => import("./adminPages/settings"))
 const TestPage = lazy(() => import("./appPages/test"))
 const AdminTestPage = lazy(() => import("./adminPages/test"))
 const StockPage = lazy(() => import("./appPages/stock"))
+const EmailMarketing = lazy(() => import("./adminPages/marketing/email"))
+const AccessGroup = lazy(() => import("./adminPages/group/access"))
+const Employees = lazy(() => import("./adminPages/group/employ"))
 
 
 
@@ -64,29 +70,14 @@ const router = createBrowserRouter([
     path: "/app",
     element: (
       <Suspense fallback={<PageFallback />}>
-        <AppLayout>
-          <Appm />
-        </AppLayout>
+        <AppLayout />
       </Suspense>
     ),
-  },
-  {
-    path: "/app/stock",
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <AppLayout>
-          <StockPage />
-        </AppLayout>
-      </Suspense>
-    ),
-  },
-  {
-    path: "/app/test",
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <TestPage />
-      </Suspense>
-    ),
+    children: [
+      { index: true, element: <Appm /> },
+      { path: "stock", element: <StockPage /> },
+      { path: "test", element: <TestPage /> },
+    ],
   },
   {
     path: "/admin",
@@ -99,12 +90,25 @@ const router = createBrowserRouter([
       { path: "analytics", element: <Analytics /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "inventory", element: <Inventory /> },
-      { path: "loginPage", element: <LoginPage /> },
       { path: "reports", element: <Reports /> },
+      { path: "reports/pnl", element: <PnL /> },
+      { path: "reports/balance-sheet", element: <BalanceSheet /> },
+      { path: "reports/daybook", element: <DayBook /> },
       { path: "tally", element: <Tally /> },
       { path: "settings", element: <Settings /> },
       { path: "test", element: <AdminTestPage /> },
+      { path: "marketing/email", element: <EmailMarketing /> },
+      { path: "group/access", element: <AccessGroup /> },
+      { path: "group/employ", element: <Employees /> },
     ],
+  },
+  {
+    path: "/admin/loginPage",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <LoginPage />
+      </Suspense>
+    ),
   },
 ])
 

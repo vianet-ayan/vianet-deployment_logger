@@ -4,13 +4,16 @@ import { useDispatch, useSelector } from "react-redux"
 import {
   ChevronRight,
   ChevronsUpDown,
+  Command,
+  FolderOpen,
   GalleryVerticalEnd,
   LogOut,
-  Mail,
+  MessageSquare,
   Package,
   Plus,
   Settings,
   SquareTerminal,
+  TableProperties,
   User,
   Users,
 } from "lucide-react"
@@ -86,35 +89,45 @@ const data = {
       url: "#",
       icon: Package,
       items: [
-        { title: "Inventory", url: "/admin/inventory" },
         { title: "Tally", url: "/admin/tally" },
+      ],
+    },
+    {
+      title: "Inventory",
+      url: "#",
+      icon: Package,
+      items: [
+        { title: "Inventory", url: "/admin/inventory" },
+        { title: "Group", url: "/admin/inventory/group" },
+        { title: "Brands", url: "/admin/inventory/brands" },
       ],
     },
     {
       title: "Reports",
       url: "#",
-      icon: SquareTerminal,
+      icon: TableProperties,
       items: [
-        { title: "P&L", url: "/admin/reports/pnl" },
+        { title: "PnL", url: "/admin/reports/pnl" },
         { title: "Balance Sheet", url: "/admin/reports/balance-sheet" },
-        { title: "Day Book", url: "/admin/reports/daybook" },
-      ],
-    },
-    {
-      title: "Marketing",
-      url: "#",
-      icon: Mail,
-      items: [
-        { title: "Email", url: "/admin/marketing/email" },
+        { title: "Daybook", url: "/admin/reports/daybook" },
       ],
     },
     {
       title: "Group",
       url: "#",
-      icon: Users,
+      icon: FolderOpen,
       items: [
-        { title: "Access", url: "/admin/group/access" },
-        { title: "Employees", url: "/admin/group/employ" },
+        { title: "Paused", url: "/admin/group/paused" },
+        { title: "Access Groups", url: "/admin/group/access-groups" },
+        { title: "Employ Group", url: "/admin/group/employ-group" },
+      ],
+    },
+    {
+      title: "AI Chat",
+      url: "/admin/ai-chat",
+      icon: MessageSquare,
+      items: [
+        { title: "Components", url: "/admin/ai-chat" },
       ],
     },
     {
@@ -244,7 +257,6 @@ function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      {/* Replaced <a> with React Router <Link> */}
                       <SidebarMenuSubButton render={<Link to={subItem.url} />}>
                         <span>{subItem.title}</span>
                       </SidebarMenuSubButton>
@@ -317,7 +329,6 @@ function NavUser({
 
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {/* Wrapped with Link for internal routing */}
               <DropdownMenuItem render={<Link to="/admin/account" />}>
                 <User />
                 Account

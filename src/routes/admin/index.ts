@@ -1,11 +1,13 @@
 import express from 'express'
 import { getAllUsers, getUserById, updateUser } from './../../db/pg/users.js'
+import dashboardRouter from './dashboard.js'
 
 
 const router = express.Router()
 /**
  * this router routes for all /api/admin/*
  */
+router.use('/dashboard', dashboardRouter)
 
 // Home route - HTML
 router.get('/test', (req, res) => {

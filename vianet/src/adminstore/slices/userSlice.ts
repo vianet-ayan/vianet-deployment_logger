@@ -16,6 +16,7 @@ interface UserData {
 interface UserState {
   users: UserData[];
   selectedUser: UserData | null;
+  test: string;
   loading: boolean;
   error: string | null;
 }
@@ -23,6 +24,7 @@ interface UserState {
 const initialState: UserState = {
   users: [],
   selectedUser: null,
+  test: "",
   loading: false,
   error: null,
 };
@@ -83,6 +85,9 @@ const userSlice = createSlice({
     clearSelectedUser: (state) => {
       state.selectedUser = null;
     },
+    setTest: (state, action: PayloadAction<string>) => {
+      state.test = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -119,5 +124,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setSelectedUser, clearSelectedUser } = userSlice.actions;
+export const { setSelectedUser, clearSelectedUser, setTest } = userSlice.actions;
 export default userSlice.reducer;

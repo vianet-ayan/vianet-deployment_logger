@@ -18,7 +18,7 @@ const LoginPage = lazy(() => import("./adminPages/loginPage"))
 const Reports = lazy(() => import("./adminPages/reports"))
 const PnL = lazy(() => import("./adminPages/reports/pnl"))
 const BalanceSheet = lazy(() => import("./adminPages/reports/balanceSheet"))
-const Daybook = lazy(() => import("./adminPages/reports/daybook"))
+const Daybook = lazy(() => import("./adminPages/reports/dayBook"))
 const Paused = lazy(() => import("./adminPages/group/paused"))
 const AccessGroups = lazy(() => import("./adminPages/group/accessGroups"))
 const EmployGroup = lazy(() => import("./adminPages/group/employGroup"))
@@ -137,7 +137,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admin/loginPage",
+    path: "/loginPage/admin",
     element: (
       <Suspense fallback={<PageFallback />}>
         <LoginPage />

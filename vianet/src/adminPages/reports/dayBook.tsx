@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -7,6 +7,7 @@ import { Search, Filter, Loader2 } from "lucide-react"
 import { ExportDropdown } from "@/components/ui/export-dropdown"
 import type { ExportColumn } from "@/lib/exportUtils"
 import { useAdminQuery } from "@/hooks/useAdminQuery"
+import { Suspense } from "react"
 
 const DAYBOOK_EXPORT_COLUMNS: ExportColumn[] = [
   { key: 'date', header: 'Date' },
@@ -196,7 +197,6 @@ export default function DayBook() {
   const parentRef = useRef<HTMLDivElement>(null)
   const [search, setSearch] = useState('')
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
-  const [activeTab, setActiveTab] = useState('overview')
   const [mounted, setMounted] = useState(false)
 
   const yesterdayDate = new Date()
@@ -260,28 +260,24 @@ export default function DayBook() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-6 max-w-6xl mx-auto w-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Day Book</h1>
-          <p className="text-sm text-muted-foreground">
-            Showing {transactionsData.length.toLocaleString()} transactions
-          </p>
-        </div>
-      </div>
-
+    <Suspense fallback={<Loader2 className="animate-spin size-8 text-muted-foreground" />}>
+    <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 p-3 sm:p-4 lg:p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5">
-          <Search size={14} className="text-muted-foreground" />
-          <Input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} className="border-0 p-0 h-auto text-sm focus-visible:ring-0 w-32" />
+        <h1 className="text-2xl font-bold tracking-tight">Daybook</h1>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5">
+            <Search size={14} className="text-muted-foreground" />
+            <Input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} className="border-0 p-0 h-auto text-sm focus-visible:ring-0 w-32" />
+          </div>
+          <Input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="w-36 text-sm" />
+          <Input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="w-36 text-sm" />
+          <Button variant="outline" size="sm"><Filter size={14} /> Filter</Button>
+          <ExportDropdown data={filtered} columns={DAYBOOK_EXPORT_COLUMNS} filename="daybook" showLabel />
         </div>
-        <Input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="w-36 text-sm" />
-        <Input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="w-36 text-sm" />
-        <Button variant="outline" size="sm"><Filter size={14} /> Filter</Button>
-        <ExportDropdown data={filtered} columns={DAYBOOK_EXPORT_COLUMNS} filename="daybook" showLabel />
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Suspense fallback={<Loader2 className="animate-spin size-8 text-muted-foreground" />}>
+      <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="detail">Detail</TabsTrigger>
@@ -330,6 +326,7 @@ export default function DayBook() {
           )}
         </TabsContent>
       </Tabs>
+      </Suspense>
     </div>
   )
 }

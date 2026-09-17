@@ -260,7 +260,6 @@ export default function DayBook() {
   }
 
   return (
-    <Suspense fallback={<Loader2 className="animate-spin size-8 text-muted-foreground" />}>
     <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 p-3 sm:p-4 lg:p-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between flex-wrap gap-2">
         <h1 className="text-2xl font-bold tracking-tight">Daybook</h1>
@@ -276,7 +275,6 @@ export default function DayBook() {
         </div>
       </div>
 
-      <Suspense fallback={<Loader2 className="animate-spin size-8 text-muted-foreground" />}>
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -326,7 +324,6 @@ export default function DayBook() {
           )}
         </TabsContent>
       </Tabs>
-      </Suspense>
     </div>
   )
 }

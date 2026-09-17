@@ -6,9 +6,19 @@ const TabsContext = React.createContext<{
   onValueChange: (value: string) => void;
 } | null>(null);
 
-function Tabs({ value, onValueChange, className, children, ...props }: React.ComponentProps<"div"> & { value: string; onValueChange: (value: string) => void }) {
+interface TabsProps extends React.ComponentProps<"div"> {
+  defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
+}
+
+function Tabs({ defaultValue = "overview", value, onValueChange, className, children, ...props }: TabsProps) {
+  const [internalValue, setInternalValue] = React.useState(defaultValue);
+  const currentValue = value ?? internalValue;
+  const handleChange = onValueChange ?? setInternalValue;
+
   return (
-    <TabsContext.Provider value={{ value, onValueChange }}>
+    <TabsContext.Provider value={{ value: currentValue, onValueChange: handleChange }}>
       <div className={cn("flex flex-col", className)} {...props}>
         {children}
       </div>

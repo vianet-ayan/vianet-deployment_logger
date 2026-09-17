@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -7,7 +7,6 @@ import { Search, Filter, Loader2 } from "lucide-react"
 import { ExportDropdown } from "@/components/ui/export-dropdown"
 import type { ExportColumn } from "@/lib/exportUtils"
 import { useAdminQuery } from "@/hooks/useAdminQuery"
-import { Suspense } from "react"
 
 const DAYBOOK_EXPORT_COLUMNS: ExportColumn[] = [
   { key: 'date', header: 'Date' },
@@ -79,19 +78,6 @@ const dayBookData: DayBookEntry[] = Array.from({ length: 1000 }, (_, i) => {
     amount,
   }
 })
-
-const getBadgeColor = (type: DayBookEntry["voucherType"]) => {
-  switch (type) {
-    case "Sales":
-      return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-    case "Purchase":
-      return "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"
-    case "Payment":
-      return "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300"
-    case "Receipt":
-      return "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
-  }
-}
 
 function SummaryCards({ totalSales, totalPayments, totalExpenses, netCash }: { totalSales: number; totalPayments: number; totalExpenses: number; netCash: number }) {
   return (
@@ -194,7 +180,6 @@ function TransactionRow({ transaction, isOpen, onToggle }: { transaction: DayBoo
 }
 
 export default function DayBook() {
-  const parentRef = useRef<HTMLDivElement>(null)
   const [search, setSearch] = useState('')
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
   const [mounted, setMounted] = useState(false)
@@ -239,7 +224,7 @@ export default function DayBook() {
 
   const totalSales = transactionsData.filter((t: DayBookEntry) => t.voucherType === 'Sales').reduce((s: number, t: DayBookEntry) => s + (t.amount ?? 0), 0)
   const totalPayments = transactionsData.filter((t: DayBookEntry) => t.voucherType === 'Payment').reduce((s: number, t: DayBookEntry) => s + (t.amount ?? 0), 0)
-  const totalExpenses = transactionsData.filter((t: DayBookEntry) => t.voucherType === 'Expense' || t.voucherType === 'Purchase').reduce((s: number, t: DayBookEntry) => s + (t.amount ?? 0), 0)
+  const totalExpenses = transactionsData.filter((t: DayBookEntry) => t.voucherType === 'Purchase').reduce((s: number, t: DayBookEntry) => s + (t.amount ?? 0), 0)
   const netCash = totalSales - totalPayments - totalExpenses
 
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)

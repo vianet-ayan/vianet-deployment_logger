@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
-import { ExportColumn } from "@/lib/exportUtils"
+import type { ExportColumn } from "@/lib/exportUtils"
 
 interface ExportDropdownProps {
   data: any[];

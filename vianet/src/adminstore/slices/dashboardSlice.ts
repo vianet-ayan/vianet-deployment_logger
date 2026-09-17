@@ -68,8 +68,8 @@ export const fetchSalesThisMonth = createAsyncThunk(
       const res = await fetch("/api/admin/dashboard/salesthismonth");
       if (!res.ok) throw new Error("Failed to fetch sales this month");
       return await res.json();
-    } catch (err: Error) {
-      return rejectWithValue(err.message);
+    } catch (err: unknown) {
+      return rejectWithValue((err as Error).message);
     }
   }
 );

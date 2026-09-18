@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux"
 import {
   ChevronRight,
   ChevronsUpDown,
-  Command,
   FolderOpen,
   GalleryVerticalEnd,
   LogOut,
@@ -15,7 +14,6 @@ import {
   SquareTerminal,
   TableProperties,
   User,
-  Users,
 } from "lucide-react"
 
 import {

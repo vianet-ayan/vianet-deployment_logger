@@ -1,26 +1,44 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-interface DaybookEntry {
-  id: string;
-  date: string;
-  type: "receipt" | "payment" | "journal" | "contra";
-  referenceNo: string;
-  partyName: string;
+export interface LedgerEntry {
+  amount: string;
+  ledgerName: string;
   description: string;
-  debitAmount: number;
-  creditAmount: number;
-  balance: number;
-  createdAt: string;
+  isDeemedPositive: string;
+}
+
+export interface InventoryEntry {
+  rate: string;
+  amount: string;
+  serialNo: string[];
+  billedQty: string;
+  description: string;
+  stockItemName: string;
+}
+
+export interface DaybookEntry {
+  id: string;
+  guid: string;
+  date: string;
+  voucher_type: string;
+  voucher_number: string;
+  party_ledger_name: string;
+  narration: string;
+  ledgerentries: LedgerEntry[];
+  inventoryentries: InventoryEntry[];
+  created_at: string;
+  billagentname: string;
 }
 
 interface DaybookState {
   entries: DaybookEntry[];
   dateRange: { start: string; end: string };
   summary: {
-    totalDebit: number;
-    totalCredit: number;
-    closingBalance: number;
+    totalSales: number;
+    totalPayments: number;
+    totalExpenses: number;
+    netCash: number;
   };
   loading: boolean;
   error: string | null;
@@ -30,13 +48,35 @@ const initialState: DaybookState = {
   entries: [],
   dateRange: { start: "", end: "" },
   summary: {
-    totalDebit: 0,
-    totalCredit: 0,
-    closingBalance: 0,
+    totalSales: 0,
+    totalPayments: 0,
+    totalExpenses: 0,
+    netCash: 0,
   },
   loading: false,
   error: null,
 };
+
+export function getAmount(entry: DaybookEntry): number {
+  const total = entry.ledgerentries.reduce((sum, l) => sum + parseFloat(l.amount || "0"), 0);
+  return Math.abs(total);
+}
+
+export const fetchDaybook = createAsyncThunk(
+  "daybook/fetchDaybook",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch("/api/admin/daybook");
+      if (!res.ok) throw new Error("Failed to fetch daybook");
+      const json = await res.json();
+      console.log("[daybookSlice] fetchDaybook response:", json);
+      return json;
+    } catch (err: unknown) {
+      console.error("[daybookSlice] fetchDaybook error:", err);
+      return rejectWithValue((err as Error).message);
+    }
+  }
+);
 
 const daybookSlice = createSlice({
   name: "daybook",
@@ -63,9 +103,10 @@ const daybookSlice = createSlice({
     setSummary: (
       state,
       action: PayloadAction<{
-        totalDebit: number;
-        totalCredit: number;
-        closingBalance: number;
+        totalSales: number;
+        totalPayments: number;
+        totalExpenses: number;
+        netCash: number;
       }>
     ) => {
       state.summary = action.payload;
@@ -76,6 +117,46 @@ const daybookSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchDaybook.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDaybook.fulfilled, (state, action) => {
+        state.loading = false;
+        const payload = action.payload;
+        console.log("[daybookSlice] fulfilled payload:", payload, "isArray:", Array.isArray(payload));
+        const entries: DaybookEntry[] = Array.isArray(payload) ? payload : [];
+        state.entries = entries;
+
+        let totalSales = 0;
+        let totalPayments = 0;
+        let totalExpenses = 0;
+
+        for (const entry of entries) {
+          const amount = getAmount(entry);
+          if (entry.voucher_type === "Sales" || entry.voucher_type === "Sales HP") {
+            totalSales += amount;
+          } else if (entry.voucher_type === "Payment") {
+            totalPayments += amount;
+          } else if (entry.voucher_type === "Purchase") {
+            totalExpenses += amount;
+          }
+        }
+
+        state.summary = {
+          totalSales,
+          totalPayments,
+          totalExpenses,
+          netCash: totalSales - totalPayments - totalExpenses,
+        };
+      })
+      .addCase(fetchDaybook.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Failed to fetch daybook";
+      });
   },
 });
 

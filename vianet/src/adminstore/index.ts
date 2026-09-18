@@ -9,6 +9,7 @@ export {
 } from "./slices/authSlice";
 
 export {
+  fetchInventory,
   setItems,
   addItem,
   updateItem,
@@ -61,6 +62,7 @@ export {
 } from "./slices/userSlice";
 
 export {
+  fetchDaybook,
   setEntries as setDaybookEntries,
   addEntry as addDaybookEntry,
   removeEntry as removeDaybookEntry,

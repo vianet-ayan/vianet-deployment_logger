@@ -5,12 +5,11 @@ import { SectionCards } from "./components/sectionCards"
 
 export default function Dashboard() {
   const dispatch = useDispatch()
-  const { test } = useSelector((state: { user: { test: string } }) => state.user);
   const { salesThisMonth, loading, error } = useSelector((state: { dashboard: { salesThisMonth: { total_sales: string; total_orders: string } | null; loading: boolean; error: string | null } }) => state.dashboard);
 
   useEffect(() => {
     if (!salesThisMonth && !loading) {
-      dispatch(fetchSalesThisMonth());
+      dispatch(fetchSalesThisMonth() as any);
     }
   }, [salesThisMonth, loading, dispatch]);
 

@@ -1,21 +1,22 @@
 import express from 'express'
 import { getAllUsers, getUserById, updateUser } from './../../db/pg/users.js'
 import dashboardRouter from './dashboard.js'
-
+import daybookRouter from './daybook.js'
+import inventoryRouter from './inventory.js'
+import testRouter from './test.js'
 
 const router = express.Router()
-/**
- * this router routes for all /api/admin/*
- */
-router.use('/dashboard', dashboardRouter)
 
-// Home route - HTML
-router.get('/test', (req, res) => {
-  res.json({ message: 'Test admin route is working!' })
+router.use('/dashboard', dashboardRouter)
+router.use('/daybook', daybookRouter)
+router.use('/inventory', inventoryRouter)
+router.use('/test', testRouter)
+
+router.get('/', (_req, res) => {
+  res.json({ message: 'Admin API' })
 })
 
-// Fetch all users
-router.get('/users', async (req, res) => {
+router.get('/users', async (_req, res) => {
   try {
     const users = await getAllUsers()
     res.json(users)
@@ -25,7 +26,6 @@ router.get('/users', async (req, res) => {
   }
 })
 
-// Fetch user by ID
 router.get('/users/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10)
@@ -43,7 +43,6 @@ router.get('/users/:id', async (req, res) => {
   }
 })
 
-// Update user
 router.put('/users/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10)

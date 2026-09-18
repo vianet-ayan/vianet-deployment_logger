@@ -1,4 +1,4 @@
-import pg from "pg"
+import pg, { type QueryResultRow } from "pg"
 
 const pool = new pg.Pool({
   host: process.env.DB_HOST || "localhost",
@@ -15,7 +15,7 @@ pool.on("error", (err) => {
   console.error("Unexpected PG pool error:", err)
 })
 
-export async function query<T = any>(text: string, params?: any[]): Promise<pg.QueryResult<T>> {
+export async function query<T extends QueryResultRow = any>(text: string, params?: any[]): Promise<pg.QueryResult<T>> {
   return pool.query<T>(text, params)
 }
 

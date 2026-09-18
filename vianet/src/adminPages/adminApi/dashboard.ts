@@ -1,6 +1,6 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 
-export const getTotalsales = async (req: Request, res: Response) => {
+export const getTotalsales = async (_req: Request, res: Response) => {
   try {
     const totalSales = 0;
     res.json({ totalSales });

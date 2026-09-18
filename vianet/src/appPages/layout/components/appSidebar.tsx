@@ -3,14 +3,12 @@ import { Link } from "react-router-dom"
 import {
   ChevronRight,
   ChevronsUpDown,
-  Command,
-  GalleryVerticalEnd,
   LogOut,
   Package,
   Plus,
   Settings,
   Sparkles,
-  User,
+  Command,
 } from "lucide-react"
 
 import {
@@ -38,11 +36,9 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,

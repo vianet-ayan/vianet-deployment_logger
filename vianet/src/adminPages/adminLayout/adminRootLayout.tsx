@@ -1,8 +1,11 @@
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
 import { Outlet } from "react-router-dom"
+import { useDispatch } from "react-redux"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AdminSidebar } from "./components/sidebar"
+import { fetchInventory } from "@/adminstore/slices/inventorySlice"
+import { fetchDaybook } from "@/adminstore/slices/daybookSlice"
 
 function ContentFallback() {
   return (
@@ -13,6 +16,13 @@ function ContentFallback() {
 }
 
 export default function AdminRootLayout() {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchInventory() as any)
+    dispatch(fetchDaybook() as any)
+  }, [dispatch])
+
   return (
     <TooltipProvider>
       <SidebarProvider>

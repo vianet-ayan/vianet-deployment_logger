@@ -1,14 +1,33 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-interface InventoryItem {
-  id: string;
-  name: string;
-  sku: string;
-  category: string;
+export interface InventoryItem {
+  id: number;
+  fullname: string;
+  brand: string | null;
+  model: string;
+  varient: string | null;
+  color: string | null;
   quantity: number;
-  price: number;
-  description?: string;
+  vquantity: number;
+  price: string;
+  gst: string;
+  resources: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+  tally_name: string;
+  guid: string;
+  add_price: string | null;
+  unit: string;
+  cost_method: string;
+  stockname: string | null;
+  masterid: string | null;
+  costing_meth: string | null;
+  data: string | null;
+  category_level_1: string | null;
+  category_level_2: string | null;
+  isblocked: boolean;
+  modelname: string | null;
 }
 
 interface InventoryState {
@@ -22,6 +41,19 @@ const initialState: InventoryState = {
   loading: false,
   error: null,
 };
+
+export const fetchInventory = createAsyncThunk(
+  "inventory/fetchInventory",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch("/api/admin/inventory");
+      if (!res.ok) throw new Error("Failed to fetch inventory");
+      return await res.json();
+    } catch (err: unknown) {
+      return rejectWithValue((err as Error).message);
+    }
+  }
+);
 
 const inventorySlice = createSlice({
   name: "inventory",
@@ -42,7 +74,7 @@ const inventorySlice = createSlice({
         state.items[index] = action.payload;
       }
     },
-    removeItem: (state, action: PayloadAction<string>) => {
+    removeItem: (state, action: PayloadAction<number>) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -51,6 +83,21 @@ const inventorySlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchInventory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchInventory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items = Array.isArray(action.payload) ? action.payload : [];
+      })
+      .addCase(fetchInventory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Failed to fetch inventory";
+      });
   },
 });
 

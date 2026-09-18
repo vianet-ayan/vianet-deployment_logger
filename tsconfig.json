@@ -6,6 +6,12 @@
     "outDir": "./dist",
     "rootDir": ".",
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@db": ["src/db/main.js"],
+      "@db/*": ["src/db/*"],
+    }
   }
 }

@@ -2,6 +2,7 @@ import express from 'express'
 import { getAllUsers, getUserById, updateUser } from './../../db/pg/users.js'
 import dashboardRouter from './dashboard.js'
 import daybookRouter from './daybook.js'
+import ledgerRouter from './ledger.js'
 import inventoryRouter from './inventory.js'
 import testRouter from './test.js'
 
@@ -9,6 +10,7 @@ const router = express.Router()
 
 router.use('/dashboard', dashboardRouter)
 router.use('/daybook', daybookRouter)
+router.use('/ledger', ledgerRouter)
 router.use('/inventory', inventoryRouter)
 router.use('/test', testRouter)
 

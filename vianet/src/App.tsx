@@ -27,6 +27,7 @@ const Tally = lazy(() => import("./adminPages/tally"))
 const Settings = lazy(() => import("./adminPages/settings"))
 const TestPage = lazy(() => import("./appPages/test"))
 const AdminTestPage = lazy(() => import("./adminPages/test"))
+const SentryTest = lazy(() => import("./adminPages/test/sentry"))
 const StockPage = lazy(() => import("./appPages/stock"))
 const Docs = lazy(() => import("./extrapages/docs").then((module) => ({ default: module.Docs })));
 const Privacy = lazy(() => import("./extrapages/privacy").then((module) => ({ default: module.PrivacyPolicy })));
@@ -134,6 +135,7 @@ const router = createBrowserRouter([
       { path: "tally", element: <Tally /> },
       { path: "settings", element: <Settings /> },
       { path: "test", element: <AdminTestPage /> },
+      { path: "test/sentry", element: <SentryTest /> },
     ],
   },
   {

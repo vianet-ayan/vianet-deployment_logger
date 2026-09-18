@@ -4,8 +4,8 @@ import { useDispatch } from "react-redux"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AdminSidebar } from "./components/sidebar"
+import { adminPersistor } from "@/adminstore/adminstore"
 import { fetchInventory } from "@/adminstore/slices/inventorySlice"
-import { fetchDaybook } from "@/adminstore/slices/daybookSlice"
 
 function ContentFallback() {
   return (
@@ -19,8 +19,23 @@ export default function AdminRootLayout() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchInventory() as any)
-    dispatch(fetchDaybook() as any)
+    const dispatchFetches = () => {
+      dispatch(fetchInventory() as any)
+    }
+
+    if (adminPersistor.getState().bootstrapped) {
+      dispatchFetches()
+      return
+    }
+
+    const unsubscribe = adminPersistor.subscribe((state) => {
+      if (state.bootstrapped) {
+        dispatchFetches()
+        unsubscribe()
+      }
+    })
+
+    return () => { unsubscribe() }
   }, [dispatch])
 
   return (

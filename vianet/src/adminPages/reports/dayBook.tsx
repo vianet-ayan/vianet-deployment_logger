@@ -1,14 +1,15 @@
-import { useState, useMemo, useRef } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Search, Filter, Loader2 } from "lucide-react"
 import { ExportDropdown } from "@/components/ui/export-dropdown"
 import type { ExportColumn } from "@/lib/exportUtils"
-import { getAmount } from "@/adminstore/slices/daybookSlice"
+import { getAmount, fetchDaybook } from "@/adminstore/slices/daybookSlice"
 import type { DaybookEntry } from "@/adminstore/slices/daybookSlice"
+import type { AppDispatch } from "@/adminstore/adminstore"
 
 const DAYBOOK_EXPORT_COLUMNS: ExportColumn[] = [
   { key: 'date', header: 'Date' },
@@ -171,11 +172,37 @@ function DetailTab({ filtered, expandedIds, toggleExpand }: { filtered: DaybookE
   )
 }
 
+function getDefaultDateRange() {
+  const today = new Date()
+  const yyyy = today.getFullYear()
+  const mm = String(today.getMonth() + 1).padStart(2, '0')
+  const dd = String(today.getDate()).padStart(2, '0')
+  return {
+    from: `${yyyy}-${mm}-01`,
+    to: `${yyyy}-${mm}-${dd}`,
+  }
+}
+
 export default function DayBook() {
+  const dispatch = useDispatch<AppDispatch>()
   const { entries: transactionsData, loading, error } = useSelector((state: { daybook: { entries: DaybookEntry[]; loading: boolean; error: string | null } }) => state.daybook)
 
   const [search, setSearch] = useState('')
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const [from, setFrom] = useState(getDefaultDateRange().from)
+  const [to, setTo] = useState(getDefaultDateRange().to)
+
+  useEffect(() => {
+    if (from && to) {
+      dispatch(fetchDaybook({ from, to }))
+    }
+  }, [dispatch, from, to])
+
+  const handleFetch = () => {
+    if (from && to) {
+      dispatch(fetchDaybook({ from, to }))
+    }
+  }
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
@@ -223,6 +250,12 @@ export default function DayBook() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between flex-wrap gap-2">
         <h1 className="text-2xl font-bold tracking-tight">Daybook</h1>
         <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1 border rounded-lg px-2 py-1">
+            <Input type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-36 border-0 p-0 h-auto text-sm focus-visible:ring-0" />
+            <span className="text-xs text-muted-foreground">to</span>
+            <Input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-36 border-0 p-0 h-auto text-sm focus-visible:ring-0" />
+          </div>
+          <Button variant="outline" size="sm" onClick={handleFetch}>Fetch</Button>
           <div className="flex items-center gap-2 border rounded-lg px-3 py-1.5">
             <Search size={14} className="text-muted-foreground" />
             <Input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} className="border-0 p-0 h-auto text-sm focus-visible:ring-0 w-32" />

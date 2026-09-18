@@ -33,7 +33,7 @@ export interface DaybookEntry {
 
 interface DaybookState {
   entries: DaybookEntry[];
-  dateRange: { start: string; end: string };
+  dateRange: { from: string; to: string };
   summary: {
     totalSales: number;
     totalPayments: number;
@@ -46,7 +46,7 @@ interface DaybookState {
 
 const initialState: DaybookState = {
   entries: [],
-  dateRange: { start: "", end: "" },
+  dateRange: { from: "", to: "" },
   summary: {
     totalSales: 0,
     totalPayments: 0,
@@ -64,15 +64,17 @@ export function getAmount(entry: DaybookEntry): number {
 
 export const fetchDaybook = createAsyncThunk(
   "daybook/fetchDaybook",
-  async (_, { rejectWithValue }) => {
+  async ({ from, to }: { from: string; to: string }, { rejectWithValue }) => {
     try {
-      const res = await fetch("/api/admin/daybook");
-      if (!res.ok) throw new Error("Failed to fetch daybook");
-      const json = await res.json();
-      console.log("[daybookSlice] fetchDaybook response:", json);
-      return json;
+      const res = await fetch(`/api/admin/daybook/range?from=${from}&to=${to}`);
+      console.log("[daybookSlice] status:", res.status, "ok:", res.ok);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      const text = await res.text();
+      console.log("[daybookSlice] response length:", text.length, "starts:", text.slice(0, 100));
+      const data = JSON.parse(text);
+      return { data, from, to };
     } catch (err: unknown) {
-      console.error("[daybookSlice] fetchDaybook error:", err);
+      console.error("[daybookSlice] error:", err);
       return rejectWithValue((err as Error).message);
     }
   }
@@ -96,7 +98,7 @@ const daybookSlice = createSlice({
     },
     setDateRange: (
       state,
-      action: PayloadAction<{ start: string; end: string }>
+      action: PayloadAction<{ from: string; to: string }>
     ) => {
       state.dateRange = action.payload;
     },
@@ -126,10 +128,10 @@ const daybookSlice = createSlice({
       })
       .addCase(fetchDaybook.fulfilled, (state, action) => {
         state.loading = false;
-        const payload = action.payload;
-        console.log("[daybookSlice] fulfilled payload:", payload, "isArray:", Array.isArray(payload));
-        const entries: DaybookEntry[] = Array.isArray(payload) ? payload : [];
+        const { data, from, to } = action.payload;
+        const entries: DaybookEntry[] = Array.isArray(data) ? data : [];
         state.entries = entries;
+        state.dateRange = { from, to };
 
         let totalSales = 0;
         let totalPayments = 0;

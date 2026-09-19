@@ -8,9 +8,9 @@ const neonUrl = process.env.POSTGRES_URL
 
 let neonPool: pg.Pool | null = null
 
-function getPool(): pg.Pool {
+function getPool(): pg.Pool | null {
   if (!neonUrl) {
-    throw new Error('POSTGRES_URL not set')
+    return null
   }
   if (!neonPool) {
     neonPool = new Pool({
@@ -22,6 +22,12 @@ function getPool(): pg.Pool {
   return neonPool
 }
 
-const query = (text: string, params?: any[]) => getPool().query(text, params)
+const query = (text: string, params?: any[]) => {
+  const pool = getPool()
+  if (!pool) {
+    throw new Error('POSTGRES_URL not set - database queries disabled')
+  }
+  return pool.query(text, params)
+}
 
 export { query, getPool as neonPool, getPool as neonDb }

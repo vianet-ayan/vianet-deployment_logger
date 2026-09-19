@@ -2,9 +2,9 @@ import { Redis } from "ioredis";
 
 let _redis: Redis | null = null;
 
-export default function getRedis(): Redis {
+export default function getRedis(): Redis | null {
   if (!process.env.up_REDIS_URL) {
-    throw new Error('up_REDIS_URL not set')
+    return null
   }
   if (!_redis) {
     _redis = new Redis(process.env.up_REDIS_URL);

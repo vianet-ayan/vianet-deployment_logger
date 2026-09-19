@@ -1,5 +1,5 @@
 export {query} from './pg/main.js'
-export { default as redis } from './redisCache/redis.js'
+export { default as getRedis } from './redisCache/redis.js'
 export { getDaybook, getDaybookCount, getDaybookByDateRange, getDaybookByDateRangeCount } from './pg/admin/daybook.js'
 export { getLedger, getLedgerCount } from './pg/admin/ledger.js'
 export { getInventory } from './pg/admin/inventory.js'

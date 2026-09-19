@@ -5,6 +5,6 @@ if (!process.env.up_REDIS_URL) {
 }
 
 const redis = new Redis(process.env.up_REDIS_URL);
-console.log('Redis connected to', process.env.up_REDIS_URL);
+
 
 export default redis;

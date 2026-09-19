@@ -29,6 +29,7 @@ const TestPage = lazy(() => import("./appPages/test"))
 const AdminTestPage = lazy(() => import("./adminPages/test"))
 const SentryTest = lazy(() => import("./adminPages/test/sentry"))
 const StockPage = lazy(() => import("./appPages/stock"))
+const MotionTest = lazy(() => import("./appPages/test/motion"))
 const Docs = lazy(() => import("./extrapages/docs").then((module) => ({ default: module.Docs })));
 const Privacy = lazy(() => import("./extrapages/privacy").then((module) => ({ default: module.PrivacyPolicy })));
 const Terms = lazy(() => import("./extrapages/tos").then((module) => ({ default: module.TermsOfService })));
@@ -137,6 +138,14 @@ const router = createBrowserRouter([
       { path: "test", element: <AdminTestPage /> },
       { path: "test/sentry", element: <SentryTest /> },
     ],
+  },
+  {
+    path: "/test/motion",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <MotionTest />
+      </Suspense>
+    ),
   },
   {
     path: "/loginPage/admin",

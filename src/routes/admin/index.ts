@@ -5,6 +5,7 @@ import daybookRouter from './daybook.js'
 import ledgerRouter from './ledger.js'
 import inventoryRouter from './inventory.js'
 import testRouter from './test.js'
+import adminAuthRouter from './auth.js'
 
 const router = express.Router()
 
@@ -13,6 +14,8 @@ router.use('/daybook', daybookRouter)
 router.use('/ledger', ledgerRouter)
 router.use('/inventory', inventoryRouter)
 router.use('/test', testRouter)
+router.use('/auth',adminAuthRouter)
+
 
 router.get('/', (_req, res) => {
   res.json({ message: 'Admin API' })

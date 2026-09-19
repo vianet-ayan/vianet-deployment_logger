@@ -10,11 +10,13 @@ import { ThemeProvider } from "@/components/theme-provider.tsx"
 import { adminStore, adminPersistor } from "@/adminstore"
 
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN as string,
-  environment: import.meta.env.MODE,
-  tracesSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
+  dsn: "https://3493bd8cf8162edbf645c274d8abda36@o4512095998115840.ingest.de.sentry.io/4512107138842704",
+  dataCollection: {
+    // To disable sending user data and HTTP bodies, uncomment the lines below. For more info visit:
+    // https://docs.sentry.io/platforms/javascript/guides/react/configuration/options/#dataCollection
+    // userInfo: false,
+    // httpBodies: []
+  }
 })
 
 createRoot(document.getElementById("root")!).render(

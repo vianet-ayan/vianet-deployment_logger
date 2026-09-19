@@ -6,18 +6,22 @@ const { Pool } = pg;
 
 const neonUrl = process.env.POSTGRES_URL
 
-if (!neonUrl) {
-  throw new Error('POSTGRES_URL not set')
+let neonPool: pg.Pool | null = null
+
+function getPool(): pg.Pool {
+  if (!neonUrl) {
+    throw new Error('POSTGRES_URL not set')
+  }
+  if (!neonPool) {
+    neonPool = new Pool({
+      connectionString: neonUrl,
+      max: 5,
+      idleTimeoutMillis: 30000,
+    })
+  }
+  return neonPool
 }
 
-const neonPool = new Pool({
-  connectionString: neonUrl,
-  max: 5,
-  idleTimeoutMillis: 30000,
-})
+const query = (text: string, params?: any[]) => getPool().query(text, params)
 
-const neonDb = neonPool
-
-const query = (text: string, params?: any[]) => neonPool.query(text, params)
-
-export { query, neonPool, neonDb }
+export { query, getPool as neonPool, getPool as neonDb }

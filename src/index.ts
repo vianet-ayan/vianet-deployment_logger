@@ -1,6 +1,7 @@
 import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import * as Sentry from '@sentry/node'
 import apirouter from './routes/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -27,6 +28,24 @@ app.get('/api-data', (req, res) => {
 // Health check
 app.get('/healthz', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
+// Verify Sentry - sends error to Sentry when hit
+app.get('/senderror', function mainHandler(req, res) {
+  Sentry.logger.info('User triggered test error', {
+    action: 'test_error_endpoint',
+  })
+  Sentry.metrics.count('test_counter', 1)
+  throw new Error("My first Sentry error!")
+})
+
+// The error handler must be registered before any other error middleware and after all controllers
+Sentry.setupExpressErrorHandler(app)
+
+// Optional fallthrough error handler
+app.use(function onError(err: any, req: any, res: any, next: any) {
+  res.statusCode = 500
+  res.end(res.sentry + '\n')
 })
 
 app.use(express.static(path.join(__dirname, '..', 'vianet', 'dist'),{

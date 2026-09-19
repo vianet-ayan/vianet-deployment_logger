@@ -1,15 +1,15 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.ts",
-      "use": "@vercel/node"
+  "buildCommand": "cd vianet && npm ci && npm run build",
+  "installCommand": "npm install",
+  "functions": {
+    "src/index.ts": {
+      "includeFiles": "vianet/dist/**"
     }
-  ],
-  "routes": [
+  },
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "api/index.ts"
+      "source": "/((?!.*\\.).*)",
+      "destination": "/src/index.ts"
     }
   ]
 }

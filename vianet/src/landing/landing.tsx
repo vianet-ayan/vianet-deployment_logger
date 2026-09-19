@@ -89,7 +89,7 @@ export const Landing = () => {
         className="fixed z-50 flex origin-top-left items-center tracking-tight pointer-events-auto"
       >
         <img
-          src={typeof logo === 'string' ? logo : logo.src}
+          src={logo}
           alt="V"
           className="h-10 w-auto object-contain md:h-20"
         />

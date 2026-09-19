@@ -28,7 +28,8 @@ export default function AdminRootLayout() {
       return
     }
 
-    const unsubscribe = adminPersistor.subscribe((state) => {
+    const unsubscribe = adminPersistor.subscribe(() => {
+      const state = adminPersistor.getState()
       if (state.bootstrapped) {
         dispatchFetches()
         unsubscribe()

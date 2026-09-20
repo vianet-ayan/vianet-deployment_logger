@@ -4,14 +4,17 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
-    "rootDir": ".",
+    "rootDir": "./src",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "strict": true,
+    "allowJs": true,
     "paths": {
-      "@/*": ["src/*"],
-      "@db": ["src/db/main.js"],
-      "@db/*": ["src/db/*"],
+      "@/*": ["./src/*"],
+      "@db": ["./src/db/main.ts"],
+      "@db/*": ["./src/db/*"]
     }
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

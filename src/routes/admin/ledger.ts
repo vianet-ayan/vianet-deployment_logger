@@ -1,5 +1,5 @@
 import express from 'express'
-import { getLedger, getLedgerCount } from '@db'
+import { getLedger, getLedgerCount } from '../../db/main.js'
 
 const router = express.Router()
 

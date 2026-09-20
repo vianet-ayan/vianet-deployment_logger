@@ -1,5 +1,5 @@
 import express from 'express'
-import { getDaybook, getDaybookCount, getDaybookByDateRange, getDaybookByDateRangeCount } from '@db'
+import { getDaybook, getDaybookCount, getDaybookByDateRange, getDaybookByDateRangeCount } from '../../db/main.js'
 
 const router = express.Router()
 

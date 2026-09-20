@@ -1,4 +1,4 @@
-import { getInventory, getInventoryCount } from '@db'
+import { getInventory, getInventoryCount } from '../../db/main.js'
 import express from 'express'
 
 const router = express.Router()

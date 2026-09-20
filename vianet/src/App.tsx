@@ -30,6 +30,7 @@ const AdminTestPage = lazy(() => import("./adminPages/test"))
 const SentryTest = lazy(() => import("./adminPages/test/sentry"))
 const StockPage = lazy(() => import("./appPages/stock"))
 const MotionTest = lazy(() => import("./appPages/test/motion"))
+const AppLoginPage = lazy(() => import("./appPages/loginPage"))
 const Docs = lazy(() => import("./extrapages/docs").then((module) => ({ default: module.Docs })));
 const Privacy = lazy(() => import("./extrapages/privacy").then((module) => ({ default: module.PrivacyPolicy })));
 const Terms = lazy(() => import("./extrapages/tos").then((module) => ({ default: module.TermsOfService })));
@@ -54,6 +55,8 @@ export function Appm() {
     </div>
   )
 }
+
+
 
 function HomeRoute() {
   const isAuthenticated = false
@@ -109,6 +112,7 @@ const router = createBrowserRouter([
       { index: true, element: <Appm /> },
       { path: "stock", element: <StockPage /> },
       { path: "test", element: <TestPage /> },
+      { path: "login", element: <AppLoginPage /> },
     ],
   },
   {
@@ -124,7 +128,6 @@ const router = createBrowserRouter([
       { path: "inventory", element: <Inventory /> },
       { path: "inventory/group", element: <InventoryGroup /> },
       { path: "inventory/brands", element: <Brands /> },
-      { path: "loginPage", element: <LoginPage /> },
       { path: "reports", element: <Reports /> },
       { path: "reports/pnl", element: <PnL /> },
       { path: "reports/balance-sheet", element: <BalanceSheet /> },
@@ -139,6 +142,7 @@ const router = createBrowserRouter([
       { path: "test/sentry", element: <SentryTest /> },
     ],
   },
+ 
   {
     path: "/test/motion",
     element: (
@@ -148,7 +152,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/loginPage/admin",
+    path: "/admin/login",
     element: (
       <Suspense fallback={<PageFallback />}>
         <LoginPage />

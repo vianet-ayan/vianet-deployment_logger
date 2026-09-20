@@ -1,9 +1,11 @@
 import { Suspense, useEffect } from "react"
 import { Outlet } from "react-router-dom"
 import { useDispatch } from "react-redux"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AdminSidebar } from "./components/sidebar"
+import { AdminHeader } from "./components/header"
+import { AdminToolbar } from "./components/toolbar"
 import { adminPersistor } from "@/adminstore/adminstore"
 import { fetchInventory } from "@/adminstore/slices/inventorySlice"
 
@@ -41,20 +43,17 @@ export default function AdminRootLayout() {
 
   return (
     <TooltipProvider>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <AdminSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-            </div>
-          </header>
-          <div className="flex-1 p-6">
-            <Suspense fallback={<ContentFallback />}>
-              <Outlet />
-            </Suspense>
-          </div>
-        </SidebarInset>
+        
+        <div className="flex-1 p-6 pt-16">
+          <AdminHeader />
+          <Suspense fallback={<ContentFallback />}>
+            <Outlet />
+          </Suspense>
+        </div>
+        
+        <AdminToolbar />
       </SidebarProvider>
     </TooltipProvider>
   )

@@ -6,6 +6,7 @@ import {
   ChevronsUpDown,
   FolderOpen,
   GalleryVerticalEnd,
+  Inbox,
   LogOut,
   MessageSquare,
   Package,
@@ -13,7 +14,10 @@ import {
   Settings,
   SquareTerminal,
   TableProperties,
+  Target,
   User,
+  Megaphone,
+  BookOpen,
 } from "lucide-react"
 
 import {
@@ -135,6 +139,46 @@ const data = {
       items: [
         { title: "General", url: "/admin/settings" },
         { title: "Login Page", url: "/admin/loginPage" },
+      ],
+    },
+    {
+      title: "Inbounds",
+      url: "#",
+      icon: Inbox,
+      items: [
+        { title: "All Inbounds", url: "/admin/inbounds" },
+        { title: "Pending", url: "/admin/inbounds/pending" },
+        { title: "Completed", url: "/admin/inbounds/completed" },
+      ],
+    },
+    {
+      title: "Tasks",
+      url: "#",
+      icon: Target,
+      items: [
+        { title: "All Tasks", url: "/admin/tasks" },
+        { title: "My Tasks", url: "/admin/tasks/my-tasks" },
+        { title: "Team Tasks", url: "/admin/tasks/team-tasks" },
+      ],
+    },
+    {
+      title: "Marketing",
+      url: "#",
+      icon: Megaphone,
+      items: [
+        { title: "Campaigns", url: "/admin/marketing/campaigns" },
+        { title: "Leads", url: "/admin/marketing/leads" },
+        { title: "Analytics", url: "/admin/marketing/analytics" },
+      ],
+    },
+    {
+      title: "Blogs",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        { title: "All Posts", url: "/admin/blogs" },
+        { title: "Categories", url: "/admin/blogs/categories" },
+        { title: "Drafts", url: "/admin/blogs/drafts" },
       ],
     },
   ],
@@ -356,6 +400,7 @@ export function AdminSidebar({
   const dispatch = useDispatch()
   const selectedUser = useSelector((state: any) => state.user?.selectedUser)
   const loading = useSelector((state: any) => state.user?.loading)
+  const { setOpen } = useSidebar()
 
   React.useEffect(() => {
     dispatch(fetchUserById(24) as any)
@@ -366,7 +411,12 @@ export function AdminSidebar({
     : { name: "Admin", email: "admin@vianet.com", avatar: "" }
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar
+      collapsible="icon"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      {...props}
+    >
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>

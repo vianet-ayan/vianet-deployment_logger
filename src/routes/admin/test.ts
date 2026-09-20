@@ -2,6 +2,15 @@ import express from 'express'
 
 const router = express.Router()
 
+router.use(express.json())
+
+router.post('/form', (req, res) => {
+  const { email, password } = req.body
+  console.log('[FORM] email:', email)
+  console.log('[FORM] password:', password)
+  res.status(200).json({ message: 'Form received yo ma boi', email })
+})
+
 router.get('/', async (req, res) => {
     // 1. Set headers for JSON streaming
     res.setHeader('Content-Type', 'application/json; charset=utf-8')

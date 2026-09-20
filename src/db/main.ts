@@ -4,6 +4,7 @@ export { getDaybook, getDaybookCount, getDaybookByDateRange, getDaybookByDateRan
 export { getLedger, getLedgerCount } from './pg/admin/ledger.js'
 export { getInventory } from './pg/admin/inventory.js'
 export { getInventoryCount } from './pg/admin/inventory.js'
+export {getAdminAccount} from './pg/admin/auth.js'
 
 
 export {getSalesThisMonth} from './pg/admin/dashboard.js'

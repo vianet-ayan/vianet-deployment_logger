@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit"
+import { getInventory } from "@/adminPages/adminApi/inventory"
 
 export interface InventoryItem {
   id: number;
@@ -44,11 +45,10 @@ const initialState: InventoryState = {
 
 export const fetchInventory = createAsyncThunk(
   "inventory/fetchInventory",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const res = await fetch("/api/admin/inventory");
-      if (!res.ok) throw new Error("Failed to fetch inventory");
-      return await res.json();
+      const token = (getState() as any).auth.token
+      return await getInventory(token)
     } catch (err: unknown) {
       return rejectWithValue((err as Error).message);
     }

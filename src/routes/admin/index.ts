@@ -1,5 +1,6 @@
 import express from 'express'
 import { getAllUsers, getUserById, updateUser } from './../../db/pg/users.js'
+import { adminAuth,adminlogger } from './../../middleware/adminAuthM.js'
 import dashboardRouter from './dashboard.js'
 import daybookRouter from './daybook.js'
 import ledgerRouter from './ledger.js'
@@ -9,12 +10,18 @@ import adminAuthRouter from './auth.js'
 
 const router = express.Router()
 
+
+
+router.use(adminlogger)
+router.use('/auth',adminAuthRouter)
+
+router.use(adminAuth)
 router.use('/dashboard', dashboardRouter)
 router.use('/daybook', daybookRouter)
 router.use('/ledger', ledgerRouter)
 router.use('/inventory', inventoryRouter)
 router.use('/test', testRouter)
-router.use('/auth',adminAuthRouter)
+
 
 
 router.get('/', (_req, res) => {

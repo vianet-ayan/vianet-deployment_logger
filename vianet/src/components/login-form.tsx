@@ -25,7 +25,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Welcome back,admin</CardTitle>
           <CardDescription>
             Login with your Apple or Google account
           </CardDescription>
@@ -69,7 +69,7 @@ export function LoginForm({
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <a
-                    href="#"
+                    href="/admin"
                     className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?

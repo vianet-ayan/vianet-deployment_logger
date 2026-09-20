@@ -12,7 +12,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@db": ["./src/db/main.ts"],
-      "@db/*": ["./src/db/*"]
+      "@db/*": ["./src/db/*"],
+      "@utills":["./src/utills/exports.ts"]
     }
   },
   "include": ["src/**/*"],

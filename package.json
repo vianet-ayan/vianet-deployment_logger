@@ -20,6 +20,7 @@
     "googleapis": "^178.1.1",
     "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
+    "opencode-ai": "^1.18.31",
     "pg": "^8.23.0"
   },
   "devDependencies": {

@@ -7,7 +7,12 @@ import { AdminSidebar } from "./components/sidebar"
 import { AdminHeader } from "./components/header"
 import { AdminToolbar } from "./components/toolbar"
 import { adminPersistor } from "@/adminstore/adminstore"
+
+
 import { fetchInventory } from "@/adminstore/slices/inventorySlice"
+import { getLedger } from "@/adminstore/slices/ledgerSlice"
+import { fetchAccessGroups } from "@/adminstore/slices/accessGroupSlice"
+import { fetchDaybookThisMonth } from "@/adminstore/slices/daybookSlice"
 
 function ContentFallback() {
   return (
@@ -23,6 +28,9 @@ export default function AdminRootLayout() {
   useEffect(() => {
     const dispatchFetches = () => {
       dispatch(fetchInventory() as any)
+      dispatch(getLedger() as any)
+      dispatch(fetchAccessGroups() as any)
+      dispatch(fetchDaybookThisMonth() as any)
     }
 
     if (adminPersistor.getState().bootstrapped) {

@@ -1,13 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-interface LedgerEntry {
+export interface LedgerEntry {
   id: string;
-  date: string;
-  type: "debit" | "credit";
-  amount: number;
-  description: string;
-  accountId: string;
+  guid: string;
+  name: string;
+  address: string[] | null;
+  mobile: string[] | null;
+  ledgername: string | null;
 }
 
 interface LedgerState {
@@ -21,6 +21,31 @@ const initialState: LedgerState = {
   loading: false,
   error: null,
 };
+
+export const getLedger = createAsyncThunk<
+  LedgerEntry[],            // Type of the returned payload
+  void,                     // First argument passed to dispatch (none in this case)
+  { rejectValue: string }   // Type when rejected
+>(
+  "ledger/getLedger",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const token = (getState() as any).auth.token;
+      const res = await fetch("/api/admin/ledger", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch ledger");
+
+      const data: LedgerEntry[] = await res.json();
+      return data;
+    } catch (err: unknown) {
+      return rejectWithValue((err as Error).message);
+    }
+  }
+);
 
 const ledgerSlice = createSlice({
   name: "ledger",
@@ -53,6 +78,22 @@ const ledgerSlice = createSlice({
       state.error = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getLedger.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getLedger.fulfilled, (state, action) => {
+        state.loading = false;
+        state.entries = Array.isArray(action.payload) ? action.payload : [];
+      })
+      .addCase(getLedger.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch ledger";
+        console.log("[error get ledger]", state, action);
+      });
+  },
 });
 
 export const {
@@ -63,4 +104,5 @@ export const {
   setLoading,
   setError,
 } = ledgerSlice.actions;
+
 export default ledgerSlice.reducer;

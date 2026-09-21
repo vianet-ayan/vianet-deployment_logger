@@ -24,6 +24,7 @@ const AccessGroups = lazy(() => import("./adminPages/group/accessGroups"))
 const EmployGroup = lazy(() => import("./adminPages/group/employGroup"))
 const AIChatComponents = lazy(() => import("./adminPages/ai-chat"))
 const Tally = lazy(() => import("./adminPages/tally"))
+const Ledger = lazy(() => import("./adminPages/ledger"))
 const Settings = lazy(() => import("./adminPages/settings"))
 const TestPage = lazy(() => import("./appPages/test"))
 const AdminTestPage = lazy(() => import("./adminPages/test"))
@@ -137,6 +138,7 @@ const router = createBrowserRouter([
       { path: "group/employ-group", element: <EmployGroup /> },
       { path: "ai-chat", element: <AIChatComponents /> },
       { path: "tally", element: <Tally /> },
+      { path: "ledger", element: <Ledger /> },
       { path: "settings", element: <Settings /> },
       { path: "test", element: <AdminTestPage /> },
       { path: "test/sentry", element: <SentryTest /> },

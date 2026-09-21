@@ -28,7 +28,7 @@ export interface DaybookEntry {
   ledgerentries: LedgerEntry[];
   inventoryentries: InventoryEntry[];
   created_at: string;
-  billagentname: string;
+  billagentname: string | null;
 }
 
 interface DaybookState {
@@ -62,23 +62,74 @@ export function getAmount(entry: DaybookEntry): number {
   return Math.abs(total);
 }
 
-export const fetchDaybook = createAsyncThunk(
-  "daybook/fetchDaybook",
-  async ({ from, to }: { from: string; to: string }, { rejectWithValue }) => {
+export const fetchDaybookThisMonth = createAsyncThunk<
+  DaybookEntry[],
+  void,
+  { rejectValue: string }
+>(
+  "daybook/fetchDaybookThisMonth",
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const res = await fetch(`/api/admin/daybook/range?from=${from}&to=${to}`);
-      console.log("[daybookSlice] status:", res.status, "ok:", res.ok);
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      const text = await res.text();
-      console.log("[daybookSlice] response length:", text.length, "starts:", text.slice(0, 100));
-      const data = JSON.parse(text);
-      return { data, from, to };
+      const token = (getState() as any).auth.token;
+      const res = await fetch("/api/admin/daybook", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch daybook");
+      return await res.json();
     } catch (err: unknown) {
-      console.error("[daybookSlice] error:", err);
       return rejectWithValue((err as Error).message);
     }
   }
 );
+
+export const fetchDaybookByDateRange = createAsyncThunk<
+  { data: DaybookEntry[]; from: string; to: string },
+  { from: string; to: string },
+  { rejectValue: string }
+>(
+  "daybook/fetchDaybookByDateRange",
+  async ({ from, to }, { rejectWithValue, getState }) => {
+    try {
+      const token = (getState() as any).auth.token;
+      const res = await fetch(`/api/admin/daybook/range?from=${from}&to=${to}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch daybook");
+      const data = await res.json();
+      return { data, from, to };
+    } catch (err: unknown) {
+      return rejectWithValue((err as Error).message);
+    }
+  }
+);
+
+function computeSummary(entries: DaybookEntry[]) {
+  let totalSales = 0;
+  let totalPayments = 0;
+  let totalExpenses = 0;
+
+  for (const entry of entries) {
+    const amount = getAmount(entry);
+    if (entry.voucher_type === "Sales" || entry.voucher_type === "Sales HP") {
+      totalSales += amount;
+    } else if (entry.voucher_type === "Payment") {
+      totalPayments += amount;
+    } else if (entry.voucher_type === "Purchase") {
+      totalExpenses += amount;
+    }
+  }
+
+  return {
+    totalSales,
+    totalPayments,
+    totalExpenses,
+    netCash: totalSales - totalPayments - totalExpenses,
+  };
+}
 
 const daybookSlice = createSlice({
   name: "daybook",
@@ -122,42 +173,35 @@ const daybookSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDaybook.pending, (state) => {
+      .addCase(fetchDaybookThisMonth.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchDaybook.fulfilled, (state, action) => {
+      .addCase(fetchDaybookThisMonth.fulfilled, (state, action) => {
+        state.loading = false;
+        const entries = Array.isArray(action.payload) ? action.payload : [];
+        state.entries = entries;
+        state.summary = computeSummary(entries);
+      })
+      .addCase(fetchDaybookThisMonth.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch daybook";
+      })
+      .addCase(fetchDaybookByDateRange.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchDaybookByDateRange.fulfilled, (state, action) => {
         state.loading = false;
         const { data, from, to } = action.payload;
-        const entries: DaybookEntry[] = Array.isArray(data) ? data : [];
+        const entries = Array.isArray(data) ? data : [];
         state.entries = entries;
         state.dateRange = { from, to };
-
-        let totalSales = 0;
-        let totalPayments = 0;
-        let totalExpenses = 0;
-
-        for (const entry of entries) {
-          const amount = getAmount(entry);
-          if (entry.voucher_type === "Sales" || entry.voucher_type === "Sales HP") {
-            totalSales += amount;
-          } else if (entry.voucher_type === "Payment") {
-            totalPayments += amount;
-          } else if (entry.voucher_type === "Purchase") {
-            totalExpenses += amount;
-          }
-        }
-
-        state.summary = {
-          totalSales,
-          totalPayments,
-          totalExpenses,
-          netCash: totalSales - totalPayments - totalExpenses,
-        };
+        state.summary = computeSummary(entries);
       })
-      .addCase(fetchDaybook.rejected, (state, action) => {
+      .addCase(fetchDaybookByDateRange.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.payload as string) || "Failed to fetch daybook";
+        state.error = action.payload || "Failed to fetch daybook";
       });
   },
 });

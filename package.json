@@ -12,6 +12,7 @@
     "dev": "node --import tsx src/server.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@sentry/node": "^10.75.0",
     "@sentry/profiling-node": "^10.75.0",
     "@types/express": "^5.0.0",
@@ -20,8 +21,10 @@
     "googleapis": "^178.1.1",
     "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
+    "mcp-handler": "^2.2.0",
     "opencode-ai": "^1.18.31",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

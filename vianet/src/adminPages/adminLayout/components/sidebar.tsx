@@ -18,6 +18,7 @@ import {
   User,
   Megaphone,
   BookOpen,
+  Book,
 } from "lucide-react"
 
 import {
@@ -179,6 +180,14 @@ const data = {
         { title: "All Posts", url: "/admin/blogs" },
         { title: "Categories", url: "/admin/blogs/categories" },
         { title: "Drafts", url: "/admin/blogs/drafts" },
+      ],
+    },
+    {
+      title: "Ledgers",
+      url: "#",
+      icon: Book,
+      items: [
+        { title: "Ledger", url: "/admin/ledger" },
       ],
     },
   ],

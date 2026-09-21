@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface AccessGroup {
@@ -19,6 +19,31 @@ const initialState: AccessGroupState = {
   loading: false,
   error: null,
 };
+
+export const fetchAccessGroups = createAsyncThunk<
+  AccessGroup[],
+  void,
+  { rejectValue: string }
+>(
+  "accessGroup/fetchAccessGroups",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const token = (getState() as any).auth.token;
+      const res = await fetch("/api/admin/access-group", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch access groups");
+
+      const data: AccessGroup[] = await res.json();
+      return data;
+    } catch (err: unknown) {
+      return rejectWithValue((err as Error).message);
+    }
+  }
+);
 
 const accessGroupSlice = createSlice({
   name: "accessGroup",
@@ -51,6 +76,21 @@ const accessGroupSlice = createSlice({
       state.error = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchAccessGroups.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAccessGroups.fulfilled, (state, action) => {
+        state.loading = false;
+        state.groups = Array.isArray(action.payload) ? action.payload : [];
+      })
+      .addCase(fetchAccessGroups.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch access groups";
+      });
+  },
 });
 
 export const {
@@ -61,4 +101,5 @@ export const {
   setLoading,
   setError,
 } = accessGroupSlice.actions;
+
 export default accessGroupSlice.reducer;

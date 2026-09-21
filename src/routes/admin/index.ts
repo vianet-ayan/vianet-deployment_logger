@@ -7,6 +7,8 @@ import ledgerRouter from './ledger.js'
 import inventoryRouter from './inventory.js'
 import testRouter from './test.js'
 import adminAuthRouter from './auth.js'
+import accessGroupRouter from './accessGroup.js'
+import chatRouter from './chat.js'
 
 const router = express.Router()
 
@@ -21,6 +23,8 @@ router.use('/daybook', daybookRouter)
 router.use('/ledger', ledgerRouter)
 router.use('/inventory', inventoryRouter)
 router.use('/test', testRouter)
+router.use('/access-group',accessGroupRouter)
+router.use('/chat', chatRouter)
 
 
 

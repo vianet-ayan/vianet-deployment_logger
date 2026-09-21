@@ -37,6 +37,7 @@ export {
 } from "./slices/ledgerSlice";
 
 export {
+  fetchAccessGroups,
   setGroups,
   addGroup,
   updateGroup,
@@ -62,7 +63,8 @@ export {
 } from "./slices/userSlice";
 
 export {
-  fetchDaybook,
+  fetchDaybookThisMonth,
+  fetchDaybookByDateRange,
   setEntries as setDaybookEntries,
   addEntry as addDaybookEntry,
   removeEntry as removeDaybookEntry,

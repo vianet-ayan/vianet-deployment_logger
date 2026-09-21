@@ -65,11 +65,16 @@ export async function executeGetDaybookSummary(from: string, to: string): Promis
   }
 }
 
-export const TOOL_DEFINITIONS = [
-  { name: 'query_database', description: 'Execute a read-only SQL query on the database and return results' },
-  { name: 'get_table_schema', description: 'Get the schema/columns of a database table' },
-  { name: 'get_daybook_summary', description: 'Get a summary of daybook entries for a date range' },
-]
+export async function executeGetLedgerSummary(): Promise<ToolResult> {
+  try {
+    const result = await query(
+      `SELECT name, COUNT(*) as entry_count FROM app.ledger GROUP BY name ORDER BY entry_count DESC LIMIT 20`
+    )
+    return { content: [{ type: 'text', text: JSON.stringify(result.rows, null, 2) }] }
+  } catch (error) {
+    return { content: [{ type: 'text', text: `Error: ${(error as Error).message}` }], isError: true }
+  }
+}
 
 export async function executeTool(name: string, input: Record<string, unknown>): Promise<ToolResult> {
   switch (name) {
@@ -79,10 +84,58 @@ export async function executeTool(name: string, input: Record<string, unknown>):
       return executeGetTableSchema(input.table as string)
     case 'get_daybook_summary':
       return executeGetDaybookSummary(input.from as string, input.to as string)
+    case 'get_ledger_summary':
+      return executeGetLedgerSummary()
     default:
       return { content: [{ type: 'text', text: `Unknown tool: ${name}` }], isError: true }
   }
 }
+
+export const GEMINI_TOOLS = [
+  {
+    name: 'query_database',
+    description: 'Execute a read-only SQL query on the database and return results. Only SELECT queries are allowed.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        sql: { type: 'STRING', description: 'The SQL query to execute (SELECT only)' },
+      },
+      required: ['sql'],
+    },
+  },
+  {
+    name: 'get_table_schema',
+    description: 'Get the schema/columns of a database table',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        table: { type: 'STRING', description: 'Table name (e.g. app.ledger, app.vouchers)' },
+      },
+      required: ['table'],
+    },
+  },
+  {
+    name: 'get_daybook_summary',
+    description: 'Get a summary of daybook entries for a date range, grouped by voucher type',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        from: { type: 'STRING', description: 'Start date (YYYY-MM-DD)' },
+        to: { type: 'STRING', description: 'End date (YYYY-MM-DD)' },
+      },
+      required: ['from', 'to'],
+    },
+  },
+  {
+    name: 'get_ledger_summary',
+    description: 'Get a summary of ledger entries',
+    parameters: {
+      type: 'OBJECT',
+      properties: {},
+      required: [],
+    },
+  },
+]
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({
@@ -96,7 +149,10 @@ export function createMcpServer(): McpServer {
       description: 'Execute a read-only SQL query on the database and return results',
       inputSchema: { sql: z.string().describe('The SQL query to execute (SELECT only)') },
     },
-    async ({ sql }) => executeQueryDatabase(sql)
+    async ({ sql }) => {
+      const result = await executeQueryDatabase(sql)
+      return result as { content: { type: 'text'; text: string }[]; [key: string]: unknown }
+    }
   )
 
   server.registerTool(
@@ -105,7 +161,10 @@ export function createMcpServer(): McpServer {
       description: 'Get the schema/columns of a database table',
       inputSchema: { table: z.string().describe('Table name (e.g. app.ledger, app.vouchers)') },
     },
-    async ({ table }) => executeGetTableSchema(table)
+    async ({ table }) => {
+      const result = await executeGetTableSchema(table)
+      return result as { content: { type: 'text'; text: string }[]; [key: string]: unknown }
+    }
   )
 
   server.registerTool(
@@ -117,7 +176,22 @@ export function createMcpServer(): McpServer {
         to: z.string().describe('End date (YYYY-MM-DD)'),
       },
     },
-    async ({ from, to }) => executeGetDaybookSummary(from, to)
+    async ({ from, to }) => {
+      const result = await executeGetDaybookSummary(from, to)
+      return result as { content: { type: 'text'; text: string }[]; [key: string]: unknown }
+    }
+  )
+
+  server.registerTool(
+    'get_ledger_summary',
+    {
+      description: 'Get a summary of ledger entries',
+      inputSchema: {},
+    },
+    async () => {
+      const result = await executeGetLedgerSummary()
+      return result as { content: { type: 'text'; text: string }[]; [key: string]: unknown }
+    }
   )
 
   return server

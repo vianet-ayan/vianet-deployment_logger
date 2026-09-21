@@ -3,7 +3,8 @@
   "installCommand": "npm install",
   "functions": {
     "api/index.ts": {
-      "includeFiles": "vianet/dist/**"
+      "includeFiles": "vianet/dist/**",
+      "maxDuration": 30
     }
   },
   "rewrites": [

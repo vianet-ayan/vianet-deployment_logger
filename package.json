@@ -12,6 +12,7 @@
     "dev": "node --import tsx src/server.ts"
   },
   "dependencies": {
+    "@google/genai": "^2.23.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@sentry/node": "^10.75.0",
     "@sentry/profiling-node": "^10.75.0",

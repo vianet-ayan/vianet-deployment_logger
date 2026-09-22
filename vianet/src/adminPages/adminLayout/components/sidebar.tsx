@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import {
   ChevronRight,
@@ -58,6 +58,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { fetchUserById } from "@/adminstore"
+import { logoutThunk,logout } from "@/adminstore/slices/authSlice"
+import type { AppDispatch } from "@/adminstore"
 
 function VianetLogo({ className }: { className?: string }) {
   return <img src="/vianet.png" alt="Vianet" className={className} />
@@ -333,6 +335,13 @@ function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    dispatch(logout())
+    navigate('/admin/login', { replace: true })
+  }
 
   return (
     <SidebarMenu>
@@ -391,9 +400,9 @@ function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <LogOut />
-                Log out
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut onClick={handleLogout}/>
+                Log outsdfasd
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

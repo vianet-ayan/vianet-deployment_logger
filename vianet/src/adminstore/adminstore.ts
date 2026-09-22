@@ -10,7 +10,6 @@ import {
   REGISTER,
 } from "redux-persist";
 import authReducer from "./slices/authSlice";
-import appAuthReducer from "@/appstore/slices/appAuthSlice";
 import inventoryReducer from "./slices/inventorySlice";
 import stockReducer from "./slices/stockSlice";
 import ledgerReducer from "./slices/ledgerSlice";
@@ -41,12 +40,11 @@ const localStoragePersistStorage = {
 const persistConfig = {
   key: "admin-root",
   storage: localStoragePersistStorage,
-  whitelist: ["auth", "appAuth", "settings"],
+  whitelist: ["auth", "settings"],
 };
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  appAuth: appAuthReducer,
   inventory: inventoryReducer,
   stock: stockReducer,
   ledger: ledgerReducer,

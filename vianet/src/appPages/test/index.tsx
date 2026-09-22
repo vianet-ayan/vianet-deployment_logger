@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import type { RootState } from "@/adminstore"
+import type { AppRootState } from "@/appstore"
 
 export default function AppTestPage() {
   const [response, setResponse] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const token = useSelector((state: RootState) => state.appAuth.token)
+  const token = useSelector((state: AppRootState) => state.appAuth.token)
 
   const fetchTest = async () => {
     setLoading(true)

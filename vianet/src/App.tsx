@@ -4,7 +4,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { useSelector } from "react-redux"
 import AdminRootLayout from "./adminPages/adminLayout/adminRootLayout"
 import AppLayout from "./appPages/layout/appLayout"
-import type { RootState } from "./adminstore"
+import { AdminStoreProvider } from "./adminstore"
+import { AppStoreProvider, type AppRootState } from "./appstore"
 
 const Landing = lazy(() =>
   import('./landing/landing').then((module) => ({
@@ -62,7 +63,7 @@ export function Appm() {
 
 
 function HomeRoute() {
-  const isAuthenticated = useSelector((state: RootState) => state.appAuth.isAuthenticated)
+  const isAuthenticated = useSelector((state: AppRootState) => state.appAuth.isAuthenticated)
 
   if (isAuthenticated) {
     return <Navigate to="/app" replace />
@@ -75,9 +76,11 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <Suspense fallback={<PageFallback />}>
-        <HomeRoute />
-      </Suspense>
+      <AppStoreProvider>
+        <Suspense fallback={<PageFallback />}>
+          <HomeRoute />
+        </Suspense>
+      </AppStoreProvider>
     ),
   },
   {
@@ -107,17 +110,21 @@ const router = createBrowserRouter([
   {
     path: "/app/login",
     element: (
-      <Suspense fallback={<PageFallback />}>
-        <AppLoginPage />
-      </Suspense>
+      <AppStoreProvider>
+        <Suspense fallback={<PageFallback />}>
+          <AppLoginPage />
+        </Suspense>
+      </AppStoreProvider>
     ),
   },
   {
     path: "/app",
     element: (
-      <Suspense fallback={<PageFallback />}>
-        <AppLayout />
-      </Suspense>
+      <AppStoreProvider>
+        <Suspense fallback={<PageFallback />}>
+          <AppLayout />
+        </Suspense>
+      </AppStoreProvider>
     ),
     children: [
       { index: true, element: <Appm /> },
@@ -128,9 +135,11 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <Suspense fallback={<PageFallback />}>
-        <AdminRootLayout />
-      </Suspense>
+      <AdminStoreProvider>
+        <Suspense fallback={<PageFallback />}>
+          <AdminRootLayout />
+        </Suspense>
+      </AdminStoreProvider>
     ),
     children: [
       { path: "analytics", element: <Analytics /> },
@@ -153,7 +162,7 @@ const router = createBrowserRouter([
       { path: "test/sentry", element: <SentryTest /> },
     ],
   },
- 
+
   {
     path: "/test/motion",
     element: (
@@ -165,9 +174,11 @@ const router = createBrowserRouter([
   {
     path: "/admin/login",
     element: (
-      <Suspense fallback={<PageFallback />}>
-        <LoginPage />
-      </Suspense>
+      <AdminStoreProvider>
+        <Suspense fallback={<PageFallback />}>
+          <LoginPage />
+        </Suspense>
+      </AdminStoreProvider>
     ),
   },
 ])

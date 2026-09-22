@@ -1,5 +1,6 @@
 export { adminStore, adminPersistor } from "./adminstore";
 export type { RootState, AppDispatch } from "./adminstore";
+export { AdminStoreProvider } from "./AdminStoreProvider";
 
 export {
   setCredentials,
@@ -9,11 +10,14 @@ export {
 } from "./slices/authSlice";
 
 export {
-  setAppCredentials,
-  appLogout,
-  setAppLoading,
-  setAppError,
-} from "@/appstore/slices/appAuthSlice";
+  appFetchUsers,
+  appFetchUserById,
+  appUpdateUserById,
+  setAppSelectedUser,
+  clearAppSelectedUser,
+  setAppUsers,
+} from "@/appstore/slices/userSlice";
+export type { AppUserData } from "@/appstore/slices/userSlice";
 
 export {
   fetchInventory,

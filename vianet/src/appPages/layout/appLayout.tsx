@@ -4,13 +4,13 @@ import { useDispatch, useSelector } from "react-redux"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./components/appSidebar"
 import { appLogout } from "@/appstore/slices/appAuthSlice"
-import type { RootState, AppDispatch } from "@/adminstore"
+import type { AppRootState, AppDispatch } from "@/appstore"
 
 export default function AppLayout() {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { token, tokenExpiry, isAuthenticated } = useSelector(
-    (state: RootState) => state.appAuth
+    (state: AppRootState) => state.appAuth
   )
   const [nowSeconds, setNowSeconds] = useState(() => Math.floor(Date.now() / 1000))
 

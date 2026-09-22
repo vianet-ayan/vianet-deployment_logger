@@ -26,6 +26,7 @@ const initialState: AppAuthState = {
 };
 
 export const appLogoutThunk = createAsyncThunk('appAuth/logout', async (_, { dispatch }) => {
+  localStorage.removeItem('app-root');
   dispatch(appLogout());
 });
 

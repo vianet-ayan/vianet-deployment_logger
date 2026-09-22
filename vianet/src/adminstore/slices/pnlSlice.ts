@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { normalizeRecordData } from "@/lib/reportData";
 
 interface PnLLineItem {
   id: string;
@@ -33,6 +34,7 @@ interface PnLSummary {
 
 interface PnLState {
   data: PnLData | null;
+  monthly: PnLMonthlyRecord[];
   summary: PnLSummary;
   loading: boolean;
   error: string | null;
@@ -40,6 +42,7 @@ interface PnLState {
 
 const initialState: PnLState = {
   data: null,
+  monthly: [],
   summary: {
     totalRevenue: 0,
     totalCogs: 0,
@@ -54,6 +57,55 @@ const initialState: PnLState = {
   loading: false,
   error: null,
 };
+
+interface PnLMonthlyRecord {
+  id: number;
+  month: string;
+  data: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export const fetchPnlMonthly = createAsyncThunk<
+  PnLMonthlyRecord[],
+  void,
+  { rejectValue: string; state: { auth: { token: string } } }
+>("pnl/fetchPnlMonthly", async (_, { rejectWithValue, getState }) => {
+  try {
+    const token = getState().auth.token;
+    const res = await fetch("/api/admin/pnl/monthly", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("Failed to fetch monthly PnL");
+    const raw = (await res.json()) as PnLMonthlyRecord[];
+    // Normalize double-wrapped payloads: { data: { data: { rows } } } → { data: { rows } }
+    return Array.isArray(raw) ? raw.map(normalizeRecordData) : [];
+  } catch (err: unknown) {
+    return rejectWithValue((err as Error).message);
+  }
+});
+
+export const savePnlMonthly = createAsyncThunk<
+  PnLMonthlyRecord,
+  { month: string; data: Record<string, unknown> },
+  { rejectValue: string; state: { auth: { token: string } } }
+>("pnl/savePnlMonthly", async ({ month, data }, { rejectWithValue, getState }) => {
+  try {
+    const token = getState().auth.token;
+    const res = await fetch("/api/admin/pnl/monthly", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ month, data }),
+    });
+    if (!res.ok) throw new Error("Failed to save monthly PnL");
+    return normalizeRecordData((await res.json()) as PnLMonthlyRecord);
+  } catch (err: unknown) {
+    return rejectWithValue((err as Error).message);
+  }
+});
 
 const pnlSlice = createSlice({
   name: "pnl",
@@ -72,6 +124,39 @@ const pnlSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPnlMonthly.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPnlMonthly.fulfilled, (state, action) => {
+        state.loading = false;
+        state.monthly = action.payload;
+      })
+      .addCase(fetchPnlMonthly.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch monthly PnL";
+      })
+      .addCase(savePnlMonthly.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(savePnlMonthly.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.monthly.findIndex((m) => m.month === action.payload.month);
+        if (index !== -1) {
+          state.monthly[index] = action.payload;
+        } else {
+          state.monthly.push(action.payload);
+          state.monthly.sort((a, b) => b.month.localeCompare(a.month));
+        }
+      })
+      .addCase(savePnlMonthly.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to save monthly PnL";
+      });
   },
 });
 

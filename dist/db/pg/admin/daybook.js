@@ -1,5 +1,24 @@
 import { query } from '../main.js';
-export const getDaybook = async (limit = 500, offset = 0) => {
+export const getDaybookCurrentMonth = async (limit = 500, offset = 0) => {
+    const result = await query(`
+    SELECT * FROM app.vouchers
+    WHERE date >= date_trunc('month', CURRENT_DATE)
+      AND date < date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+    ORDER BY id ASC
+    LIMIT $1 OFFSET $2
+  `, [limit, offset]);
+    return result.rows;
+};
+export const getDaybookCurrentMonthCount = async () => {
+    const result = await query(`
+    SELECT COUNT(*) FROM app.vouchers
+    WHERE date >= date_trunc('month', CURRENT_DATE)
+      AND date < date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+  `);
+    const countString = result.rows[0].count;
+    return parseInt(countString, 10);
+};
+export const getAllDaybook = async (limit = 500, offset = 0) => {
     const result = await query(`
     SELECT * FROM app.vouchers
     ORDER BY id ASC
@@ -7,7 +26,7 @@ export const getDaybook = async (limit = 500, offset = 0) => {
   `, [limit, offset]);
     return result.rows;
 };
-export const getDaybookCount = async () => {
+export const getAllDaybookCount = async () => {
     const result = await query(`SELECT COUNT(*) FROM app.vouchers`);
     const countString = result.rows[0].count;
     return parseInt(countString, 10);

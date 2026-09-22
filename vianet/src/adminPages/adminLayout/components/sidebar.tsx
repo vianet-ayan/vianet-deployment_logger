@@ -19,6 +19,8 @@ import {
   Megaphone,
   BookOpen,
   Book,
+  TrendingUp,
+  Scale,
 } from "lucide-react"
 
 import {
@@ -57,9 +59,10 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { formatCompact, getRows, computePnlStats, sumAllRows } from "@/lib/reportData"
 import { fetchUserById } from "@/adminstore"
-import { logoutThunk,logout } from "@/adminstore/slices/authSlice"
-import type { AppDispatch } from "@/adminstore"
+import { logout } from "@/adminstore/slices/authSlice"
+import type { RootState, AppDispatch } from "@/adminstore"
 
 function VianetLogo({ className }: { className?: string }) {
   return <img src="/vianet.png" alt="Vianet" className={className} />
@@ -325,6 +328,71 @@ function NavMain({
   )
 }
 
+function isLiabilityRowName(name: string): boolean {
+  const n = name.toLowerCase()
+  return (
+    n.includes("liabilit") ||
+    n.includes("loan") ||
+    n.includes("payable") ||
+    n.includes("duties") ||
+    n.includes("provision") ||
+    n.includes("capital")
+  )
+}
+
+function FinancialSidebarData() {
+  const monthly = useSelector((state: RootState) => state.pnl?.monthly ?? [])
+  const records = useSelector((state: RootState) => state.balanceSheet?.records ?? [])
+
+  const latestPnlMonthly = [...monthly].sort((a, b) => b.month.localeCompare(a.month))[0]
+  const latestBs = [...records].sort((a, b) => b.date.localeCompare(a.date))[0]
+
+  const pnlRows = getRows(latestPnlMonthly?.data)
+  const stats = computePnlStats(pnlRows)
+  const netProfit = pnlRows.length > 0 ? stats.netProfit : null
+
+  const bsRows = getRows(latestBs?.data)
+  const totalAssets = bsRows.length > 0 ? sumAllRows(bsRows.filter((r) => !isLiabilityRowName(r.name))) : null
+
+  const monthLabel = latestPnlMonthly
+    ? new Date(`${latestPnlMonthly.month}-01T00:00:00`).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+    : null
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Financials</SidebarGroupLabel>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip={latestPnlMonthly ? `PnL · ${monthLabel}` : "PnL — no data"}>
+            <Link to="/admin/reports/pnl">
+              <TrendingUp className={netProfit != null && netProfit < 0 ? "text-red-500" : "text-green-600"} />
+              <div className="grid flex-1 text-left leading-tight">
+                <span className="truncate text-xs text-muted-foreground">PnL {monthLabel ? `· ${monthLabel}` : ""}</span>
+                <span className="truncate text-sm font-medium">
+                  {netProfit != null ? formatCompact(netProfit) : "No data"}
+                </span>
+              </div>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild tooltip={latestBs ? `Balance Sheet · ${latestBs.date}` : "Balance Sheet — no data"}>
+            <Link to="/admin/reports/balance-sheet">
+              <Scale />
+              <div className="grid flex-1 text-left leading-tight">
+                <span className="truncate text-xs text-muted-foreground">Balance Sheet</span>
+                <span className="truncate text-sm font-medium">
+                  {totalAssets != null ? formatCompact(totalAssets) : "No data"}
+                </span>
+              </div>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarGroup>
+  )
+}
+
 function NavUser({
   user,
 }: {
@@ -416,12 +484,12 @@ export function AdminSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const dispatch = useDispatch()
-  const selectedUser = useSelector((state: any) => state.user?.selectedUser)
-  const loading = useSelector((state: any) => state.user?.loading)
+  const selectedUser = useSelector((state: RootState) => state.user?.selectedUser)
+  const loading = useSelector((state: RootState) => state.user?.loading)
   const { setOpen } = useSidebar()
 
   React.useEffect(() => {
-    dispatch(fetchUserById(24) as any)
+    dispatch(fetchUserById(24))
   }, [dispatch])
 
   const user = selectedUser
@@ -440,6 +508,7 @@ export function AdminSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <FinancialSidebarData />
       </SidebarContent>
       <SidebarFooter>
         {loading ? (

@@ -58,8 +58,8 @@ router.post('/jwt', async (req, res) => {
         res.status(401).json({ error: 'Invalid password' });
         return;
     }
-    const token = generateToken({ email: account.email, name: account.name });
-    res.status(200).json({ token, name: account.name, email: account.email });
+    const token = generateToken({ email: account.email, name: account.name, user_type: account.user_type });
+    res.status(200).json({ token, name: account.name, email: account.email, user_type: account.user_type });
 });
 router.post('/verify-jwt', (req, res) => {
     const { token } = req.body || {};
@@ -70,6 +70,33 @@ router.post('/verify-jwt', (req, res) => {
     try {
         const decoded = verifyToken(token);
         res.status(200).json({ valid: true, data: decoded });
+    }
+    catch (err) {
+        res.status(401).json({ valid: false, error: 'Invalid or expired token' });
+    }
+});
+router.post('/validate-token', async (req, res) => {
+    const { token } = req.body || {};
+    if (!token) {
+        res.status(400).json({ error: 'token is required' });
+        return;
+    }
+    try {
+        const decoded = verifyToken(token);
+        const account = await getAdminAccount(decoded.email);
+        if (!account) {
+            res.status(404).json({ error: 'Account not found' });
+            return;
+        }
+        res.status(200).json({
+            valid: true,
+            user: {
+                name: account.name,
+                email: account.email,
+                user_type: account.user_type
+            },
+            exp: decoded.exp
+        });
     }
     catch (err) {
         res.status(401).json({ valid: false, error: 'Invalid or expired token' });

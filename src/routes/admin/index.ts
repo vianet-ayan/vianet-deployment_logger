@@ -9,6 +9,7 @@ import testRouter from './test.js'
 import adminAuthRouter from './auth.js'
 import accessGroupRouter from './accessGroup.js'
 import chatRouter from './chat.js'
+import pnlRouter from './pnl.js'
 
 const router = express.Router()
 
@@ -25,6 +26,7 @@ router.use('/inventory', inventoryRouter)
 router.use('/test', testRouter)
 router.use('/access-group',accessGroupRouter)
 router.use('/chat', chatRouter)
+router.use('/pnl', pnlRouter)
 
 
 

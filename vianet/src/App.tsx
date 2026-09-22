@@ -1,8 +1,10 @@
 import { lazy, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
+import { useSelector } from "react-redux"
 import AdminRootLayout from "./adminPages/adminLayout/adminRootLayout"
 import AppLayout from "./appPages/layout/appLayout"
+import type { RootState } from "./adminstore"
 
 const Landing = lazy(() =>
   import('./landing/landing').then((module) => ({
@@ -60,7 +62,7 @@ export function Appm() {
 
 
 function HomeRoute() {
-  const isAuthenticated = false
+  const isAuthenticated = useSelector((state: RootState) => state.appAuth.isAuthenticated)
 
   if (isAuthenticated) {
     return <Navigate to="/app" replace />
@@ -103,6 +105,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/app/login",
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <AppLoginPage />
+      </Suspense>
+    ),
+  },
+  {
     path: "/app",
     element: (
       <Suspense fallback={<PageFallback />}>
@@ -113,7 +123,6 @@ const router = createBrowserRouter([
       { index: true, element: <Appm /> },
       { path: "stock", element: <StockPage /> },
       { path: "test", element: <TestPage /> },
-      { path: "login", element: <AppLoginPage /> },
     ],
   },
   {

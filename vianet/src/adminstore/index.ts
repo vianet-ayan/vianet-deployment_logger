@@ -9,6 +9,13 @@ export {
 } from "./slices/authSlice";
 
 export {
+  setAppCredentials,
+  appLogout,
+  setAppLoading,
+  setAppError,
+} from "@/appstore/slices/appAuthSlice";
+
+export {
   fetchInventory,
   setItems,
   addItem,

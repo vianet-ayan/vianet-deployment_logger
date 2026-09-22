@@ -4,6 +4,7 @@ export { getDaybookCurrentMonth, getDaybookCurrentMonthCount, getAllDaybook, get
 export { getLedger, getLedgerCount } from './pg/admin/ledger.js'
 export { getInventory, getInventoryCount, getInventoryByAccessGroup, getInventoryByAccessGroupCount } from './pg/admin/inventory.js'
 export {getAdminAccount} from './pg/admin/auth.js'
+export {getAppAccount} from './pg/app/auth.js'
 export {getAllAccessGroups} from './pg/admin/accessGroup.js'
 export {
   getPnlByDate,

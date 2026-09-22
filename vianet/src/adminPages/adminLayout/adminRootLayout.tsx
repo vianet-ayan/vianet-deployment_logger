@@ -69,7 +69,13 @@ export default function AdminRootLayout() {
       // items onto a group, so the group list must exist before it resolves
       void dispatch(fetchAccessGroups())
         .unwrap()
-        .then(() => dispatch(fetchAccessGroupInventory(1)))
+        .then((groups) => {
+          const first = groups[0]
+          if (first) dispatch(fetchAccessGroupInventory(Number(first.id)))
+          // Also prefetch group 8 explicitly
+          const eight = groups.find((g) => Number(g.id) === 8)
+          if (eight) dispatch(fetchAccessGroupInventory(8))
+        })
         .catch(() => {})
     }
 

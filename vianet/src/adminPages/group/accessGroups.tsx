@@ -56,16 +56,7 @@ function JoinUrlCell({ url }: { url: string | null | undefined }) {
 
 function GroupInventoryPanel({ group }: { group: AccessGroup }) {
   const dispatch = useDispatch<AppDispatch>()
-  const items = group.inventory?.data
-
-  if (!items) {
-    return (
-      <div className="mt-2 flex items-center justify-center gap-2 rounded border bg-muted/30 py-6 text-sm text-muted-foreground">
-        <Loader2 size={14} className="animate-spin" />
-        Loading inventory…
-      </div>
-    )
-  }
+  const items = group.inventory?.data ?? []
 
   if (items.length === 0) {
     return (
@@ -113,7 +104,7 @@ function GroupInventoryPanel({ group }: { group: AccessGroup }) {
                 unit: "",
                 isblocked: false,
               }
-              dispatch(addInventoryItem({ accessGroupId: group.id, item: demo }))
+              dispatch(addInventoryItem({ accessGroupId: Number(group.id), item: demo }))
             }}
           >
             + Add
@@ -124,7 +115,7 @@ function GroupInventoryPanel({ group }: { group: AccessGroup }) {
             className="h-6 px-2 text-xs"
             onClick={(e) => {
               e.stopPropagation()
-              dispatch(fetchAccessGroupInventory(group.id))
+              dispatch(fetchAccessGroupInventory(Number(group.id)))
             }}
           >
             <RefreshCw size={12} className="mr-1" /> Refresh
@@ -155,7 +146,7 @@ function GroupInventoryPanel({ group }: { group: AccessGroup }) {
                 title="Remove from store"
                 onClick={(e) => {
                   e.stopPropagation()
-                  dispatch(removeInventoryItem({ accessGroupId: group.id, id: item.iag_id }))
+                  dispatch(removeInventoryItem({ accessGroupId: Number(group.id), id: item.iag_id }))
                 }}
               >
                 <Trash2 size={12} />
@@ -196,10 +187,10 @@ export default function AccessGroups() {
   const handleToggle = (group: AccessGroup) => {
     const next = expandedId === group.id ? null : group.id
     setExpandedId(next)
-    // Fetch on first expand — an empty data array with no accessGroupId means never fetched
-    const neverFetched = !group.inventory || group.inventory.accessGroupId !== group.id
+    // Fetch on first expand — accessGroupId 0 means never fetched (emptyInventory placeholder)
+    const neverFetched = !group.inventory || Number(group.inventory.accessGroupId) === 0
     if (next === group.id && neverFetched) {
-      dispatch(fetchAccessGroupInventory(group.id))
+      dispatch(fetchAccessGroupInventory(Number(group.id)))
     }
   }
 

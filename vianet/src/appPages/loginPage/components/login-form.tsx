@@ -1,6 +1,10 @@
 import { useState } from "react"
+import { useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Eye, EyeOff } from "lucide-react"
+import { appLogin } from "../../appApi/login"
+import { setAppCredentials } from "@/appstore/slices/appAuthSlice"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -24,6 +28,51 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const data = new FormData(e.currentTarget)
+    const email = data.get("email") as string
+    const password = data.get("password") as string
+
+    try {
+      const result = await appLogin(email, password)
+      if (!result.token) {
+        setError(result.error || "Login failed")
+        return
+      }
+      if (result.user_type === "admin") {
+        const proceed = window.confirm("User is a admin, wanna proceed?")
+        if (!proceed) {
+          setError("Login cancelled")
+          return
+        }
+      }
+      dispatch(
+        setAppCredentials({
+          user: {
+            id: email,
+            name: result.name,
+            email: result.email,
+            user_type: result.user_type || "user",
+          },
+          token: result.token,
+        })
+      )
+      navigate("/app")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -31,16 +80,15 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            Login with your account credentials
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={(e) => {
-            e.preventDefault()
-            const data = new FormData(e.currentTarget)
-            console.log({ email: data.get("email"), password: data.get("password") })
-          }}>
+          <form onSubmit={handleSubmit}>
             <FieldGroup>
+              {error && (
+                <p className="text-sm text-red-500 text-center">{error}</p>
+              )}
               <Field>
                 <Button variant="outline" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -68,6 +116,7 @@ export function LoginForm({
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="m@example.com"
                   required
@@ -86,6 +135,7 @@ export function LoginForm({
                 <div className="relative">
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     required
@@ -100,7 +150,9 @@ export function LoginForm({
                 </div>
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={loading} className="w-full">
+                  {loading ? "Logging in..." : "Login"}
+                </Button>
                 <FieldDescription className="text-center">
                   Don&apos;t have an account? <a href="#">Sign up</a>
                 </FieldDescription>

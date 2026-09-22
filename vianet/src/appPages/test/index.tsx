@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/adminstore"
 
 export default function AppTestPage() {
   const [response, setResponse] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const token = useSelector((state: RootState) => state.appAuth.token)
 
   const fetchTest = async () => {
     setLoading(true)
     setError(null)
     setResponse(null)
     try {
-      const res = await fetch("/api/app/test")
+      const res = await fetch("/api/app/test", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       const text = await res.text()
       setResponse(text)
     } catch (err) {

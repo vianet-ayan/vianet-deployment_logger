@@ -47,16 +47,19 @@ interface AccessGroupState {
   groups: AccessGroup[];
   loading: boolean;
   error: string | null;
+  pendingInventory: AccessGroupInventory | null;
 }
 
-function emptyInventory(accessGroupId: number | null = null): AccessGroupInventory {
-  return { accessGroupId: accessGroupId ?? 0, count: 0, data: [] };
+/** accessGroupId 0 means never fetched (placeholder). */
+function emptyInventory(accessGroupId = 0): AccessGroupInventory {
+  return { accessGroupId, count: 0, data: [] };
 }
 
 const initialState: AccessGroupState = {
   groups: [],
   loading: false,
   error: null,
+  pendingInventory: null,
 };
 
 export const fetchAccessGroups = createAsyncThunk<
@@ -110,8 +113,8 @@ export const fetchAccessGroupInventory = createAsyncThunk<
         data: AccessGroupInventoryItem[];
       };
       return {
-        accessGroupId: json.accessGroupId,
-        count: json.count,
+        accessGroupId: Number(json.accessGroupId),
+        count: Number(json.count) || 0,
         data: Array.isArray(json.data) ? json.data : [],
       };
     } catch (err: unknown) {
@@ -125,26 +128,35 @@ const accessGroupSlice = createSlice({
   initialState,
   reducers: {
     setGroups: (state, action: PayloadAction<AccessGroup[]>) => {
-      state.groups = action.payload;
+      state.groups = action.payload.map((g) => ({
+        ...g,
+        id: Number(g.id),
+        inventory: g.inventory ?? emptyInventory(),
+      }));
       state.error = null;
     },
     addGroup: (state, action: PayloadAction<AccessGroup>) => {
-      state.groups.push({
+      const payload = {
         ...action.payload,
-        inventory: action.payload.inventory ?? emptyInventory(action.payload.id),
-      });
+        id: Number(action.payload.id),
+        inventory: action.payload.inventory ?? emptyInventory(),
+      };
+      state.groups.push(payload);
     },
     updateGroup: (state, action: PayloadAction<AccessGroup>) => {
       const index = state.groups.findIndex(
-        (group) => group.id === action.payload.id
+        (group) => group.id === Number(action.payload.id)
       );
       if (index !== -1) {
-        state.groups[index] = action.payload;
+        state.groups[index] = {
+          ...action.payload,
+          id: Number(action.payload.id),
+        };
       }
     },
-    removeGroup: (state, action: PayloadAction<string>) => {
+    removeGroup: (state, action: PayloadAction<number>) => {
       state.groups = state.groups.filter(
-        (group) => group.id !== action.payload
+        (group) => group.id !== Number(action.payload)
       );
     },
     /** Add one item to a specific group's inventory.data */
@@ -156,7 +168,7 @@ const accessGroupSlice = createSlice({
       }>
     ) => {
       const group = state.groups.find(
-        (g) => g.id === action.payload.accessGroupId
+        (g) => Number(g.id) === Number(action.payload.accessGroupId)
       );
       if (!group) return;
       group.inventory.data.push(action.payload.item);
@@ -168,7 +180,7 @@ const accessGroupSlice = createSlice({
       action: PayloadAction<{ accessGroupId: number; id: number }>
     ) => {
       const group = state.groups.find(
-        (g) => g.id === action.payload.accessGroupId
+        (g) => Number(g.id) === Number(action.payload.accessGroupId)
       );
       if (!group) return;
       group.inventory.data = group.inventory.data.filter(
@@ -186,7 +198,7 @@ const accessGroupSlice = createSlice({
       }>
     ) => {
       const group = state.groups.find(
-        (g) => g.id === action.payload.accessGroupId
+        (g) => Number(g.id) === Number(action.payload.accessGroupId)
       );
       if (!group) return;
       group.inventory.data = action.payload.data;
@@ -208,15 +220,30 @@ const accessGroupSlice = createSlice({
       .addCase(fetchAccessGroups.fulfilled, (state, action) => {
         state.loading = false;
         const incoming = Array.isArray(action.payload) ? action.payload : [];
-        // Every group gets an inventory object; keep previously-fetched data
         const oldById = new Map(
-          state.groups.map((g) => [g.id, g.inventory] as const)
+          state.groups.map((g) => [Number(g.id), g.inventory] as const)
         );
-        state.groups = incoming.map((g) => ({
-          ...g,
-          inventory:
-            g.inventory?.data?.length ? g.inventory : oldById.get(g.id) ?? emptyInventory(g.id),
-        }));
+        state.groups = incoming.map((g) => {
+          const id = Number(g.id);
+          return {
+            ...g,
+            id,
+            inventory:
+              g.inventory?.data?.length
+                ? g.inventory
+                : oldById.get(id) ?? emptyInventory(),
+          };
+        });
+        // Drain inventory that resolved before its group list arrived
+        if (state.pendingInventory) {
+          const group = state.groups.find(
+            (g) => Number(g.id) === state.pendingInventory!.accessGroupId
+          );
+          if (group) {
+            group.inventory = state.pendingInventory;
+            state.pendingInventory = null;
+          }
+        }
       })
       .addCase(fetchAccessGroups.rejected, (state, action) => {
         state.loading = false;
@@ -226,10 +253,14 @@ const accessGroupSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchAccessGroupInventory.fulfilled, (state, action) => {
-        // Attach the fetched inventory object onto its group
-        const group = state.groups.find((g) => g.id === action.payload.accessGroupId);
+        const group = state.groups.find(
+          (g) => Number(g.id) === Number(action.payload.accessGroupId)
+        );
         if (group) {
           group.inventory = action.payload;
+          state.pendingInventory = null;
+        } else if (action.payload.data.length > 0) {
+          state.pendingInventory = action.payload;
         }
       })
       .addCase(fetchAccessGroupInventory.rejected, (state, action) => {

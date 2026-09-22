@@ -1,7 +1,14 @@
 import express from 'express'
 import { testDbDirect, testDbToRedis } from '../../db/test.js'
+import { appAuth, appLogger } from '../../middleware/appAuthM.js'
+import appAuthRouter from './auth.js'
 
 const router = express.Router()
+
+router.use(appLogger)
+router.use('/auth', appAuthRouter)
+
+router.use(appAuth)
 
 router.get('/test', async (req, res) => {
   try {
